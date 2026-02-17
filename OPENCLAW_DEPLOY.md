@@ -22,15 +22,36 @@ The LLM reads prices, analyzes charts, checks positions, considers risk — then
 
 | Component | Status |
 |-----------|--------|
-| `agents/shared/drift-client.ts` | **Stays** — becomes a skill script |
-| `agents/shared/risk.ts` | **Stays** — risk checks still apply |
-| `agents/shared/prices.ts` | **Stays** — becomes a skill script |
+| `agents/shared/drift-client.ts` | **Ported** → `skills/perpsclaw/scripts/lib.ts` |
+| `agents/shared/risk.ts` | **Ported** → `skills/perpsclaw/scripts/risk-check.ts` |
+| `agents/shared/prices.ts` | **Ported** → `skills/perpsclaw/scripts/price.ts` |
 | `agents/shared/loop.ts` | **Replaced** — OpenClaw cron handles the loop |
-| `agents/shark/strategy.ts` | **Replaced** — LLM reasoning replaces fixed SMA logic |
-| `agents/wolf/strategy.ts` | **Replaced** — LLM reasoning replaces fixed Bollinger logic |
-| `agents/grid/strategy.ts` | **Replaced** — LLM reasoning replaces fixed grid logic |
+| `agents/shark/strategy.ts` | **Replaced** — LLM reasoning via SOUL.md |
+| `agents/wolf/strategy.ts` | **Replaced** — LLM reasoning via SOUL.md |
+| `agents/grid/strategy.ts` | **Replaced** — LLM reasoning via SOUL.md |
 | `web/` (frontend) | **Stays** — arena viewer unchanged |
 | `deploy/` | **Replaced** — ClawForge manages deployment |
+
+### Build Status
+
+All components below are **built and in the repo**:
+
+- [x] `skills/perpsclaw/SKILL.md` — Skill definition with triggers and commands
+- [x] `skills/perpsclaw/scripts/lib.ts` — Shared Drift client, Pyth price, helpers
+- [x] `skills/perpsclaw/scripts/price.ts` — SOL price + SMA, RSI, Bollinger indicators
+- [x] `skills/perpsclaw/scripts/position.ts` — Position, PnL, margin, liquidation price
+- [x] `skills/perpsclaw/scripts/trade.ts` — Execute long/short/close on Drift
+- [x] `skills/perpsclaw/scripts/balance.ts` — Wallet SOL + Drift collateral + buying power
+- [x] `skills/perpsclaw/scripts/market.ts` — Funding rate, OI, long/short ratio, basis
+- [x] `skills/perpsclaw/scripts/risk-check.ts` — Validate trade against all risk limits
+- [x] `skills/perpsclaw/references/drift-perps.md` — Drift reference for agent context
+- [x] `skills/perpsclaw/references/risk-rules.md` — Risk parameters and decision hierarchy
+- [x] `agents/souls/shark.md` — Shark SOUL.md (momentum)
+- [x] `agents/souls/wolf.md` — Wolf SOUL.md (mean reversion)
+- [x] `agents/souls/grid.md` — Grid SOUL.md (grid trading)
+- [x] `agents/openclaw/shark.json` — Shark openclaw.json config
+- [x] `agents/openclaw/wolf.json` — Wolf openclaw.json config
+- [x] `agents/openclaw/grid.json` — Grid openclaw.json config
 
 ---
 
@@ -629,36 +650,28 @@ Recommended: Sonnet for Shark and Wolf, Haiku for Grid. ~$50/mo total API cost.
 
 ## Part 6: Build Order
 
-### Phase 1: Build the skill (Day 1)
-1. Create `skills/perpsclaw/` directory with SKILL.md
-2. Port `agents/shared/prices.ts` → `scripts/price.ts` (wrap as CLI, output JSON)
-3. Port `agents/shared/drift-client.ts` + position reading → `scripts/position.ts`
-4. Port trade execution → `scripts/trade.ts`
-5. Create `scripts/balance.ts`, `scripts/market.ts`, `scripts/risk-check.ts`
-6. Test each script standalone: `npx tsx scripts/price.ts`
+### Phase 1: Build the skill — DONE
+All skill scripts, SKILL.md, SOUL.md files, and openclaw.json configs are built and in the repo. See the Build Status checklist above.
 
-### Phase 2: Write SOUL.md files (Day 1)
-1. Write Shark, Wolf, Grid SOUL.md files
-2. Include trading philosophy, risk parameters, decision process
-
-### Phase 3: Local testing (Day 2)
+### Phase 2: Local testing (next step)
 1. Install OpenClaw locally: `npm install -g openclaw@latest && openclaw onboard --install-daemon`
 2. Start gateway: `openclaw gateway --port 18789`
-3. Copy skill to `~/.openclaw/skills/perpsclaw/`
-4. Copy Shark SOUL.md to `~/.openclaw/SOUL.md`
-5. Chat with the agent: "Check the SOL price and tell me what you think"
-6. Test a full loop: "Run your trading loop"
-7. Verify it calls scripts, reads output, reasons, and (optionally) trades
+3. Copy skill to `~/.openclaw/skills/perpsclaw/` and run `npm install` in it
+4. Copy a SOUL.md: `cp agents/souls/shark.md ~/.openclaw/SOUL.md`
+5. Copy a config: `cp agents/openclaw/shark.json ~/.openclaw/openclaw.json` and fill in API keys
+6. Chat with the agent: "Check the SOL price and tell me what you think"
+7. Test a full loop: "Run your trading loop"
+8. Verify it calls scripts, reads output, reasons, and (optionally) trades
 
-### Phase 4: Deploy to VPS (Day 3)
-1. Set up ClawForge on VPS (Steps 1-2)
+### Phase 3: Deploy to VPS
+1. Set up ClawForge on VPS (Part 4, Steps 1-2)
 2. Provision 3 agents (Step 5)
 3. Configure skills and SOUL.md (Step 6)
 4. Set up cron loops (Step 7)
 5. Deploy frontend (Step 8)
 6. Monitor for 24 hours
 
-### Phase 5: Go live (Day 4+)
+### Phase 4: Go live
 1. Fund devnet wallets, test for 48 hours
 2. Switch to mainnet (new wallets, real SOL/USDC)
 3. Monitor daily, post results on Twitter
