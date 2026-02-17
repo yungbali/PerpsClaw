@@ -1,0 +1,63 @@
+version: "3.8"
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    ports:
+      - "3000:3000"
+    env_file: ../.env
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  shark:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+      args:
+        AGENT_NAME: shark
+    env_file: ../.env
+    environment:
+      - AGENT_NAME=shark
+    restart: unless-stopped
+    command: ["npx", "tsx", "agents/shark/index.ts"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  wolf:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+      args:
+        AGENT_NAME: wolf
+    env_file: ../.env
+    environment:
+      - AGENT_NAME=wolf
+    restart: unless-stopped
+    command: ["npx", "tsx", "agents/wolf/index.ts"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+
+  grid:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.agent
+      args:
+        AGENT_NAME: grid
+    env_file: ../.env
+    environment:
+      - AGENT_NAME=grid
+    restart: unless-stopped
+    command: ["npx", "tsx", "agents/grid/index.ts"]
+    deploy:
+      resources:
+        limits:
+          memory: 256M

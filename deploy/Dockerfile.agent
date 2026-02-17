@@ -1,0 +1,17 @@
+FROM node:20-alpine AS base
+WORKDIR /app
+
+# Install dependencies
+COPY package.json ./
+COPY agents/package.json ./agents/
+RUN npm install --workspace=agents
+
+# Copy source
+COPY tsconfig.base.json ./
+COPY agents/ ./agents/
+
+# Agent name passed as build arg
+ARG AGENT_NAME=shark
+ENV AGENT_NAME=${AGENT_NAME}
+
+CMD ["npx", "tsx", "--env-file=.env", "agents/${AGENT_NAME}/index.ts"]

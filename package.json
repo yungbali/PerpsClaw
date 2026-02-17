@@ -1,0 +1,12 @@
+{
+  "name": "perpsclaw",
+  "private": true,
+  "workspaces": ["web", "agents"],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=web",
+    "dev:shark": "npm run start --workspace=agents -- shark",
+    "dev:wolf": "npm run start --workspace=agents -- wolf",
+    "dev:grid": "npm run start --workspace=agents -- grid",
+    "build:web": "npm run build --workspace=web"
+  }
+}
