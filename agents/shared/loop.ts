@@ -5,12 +5,14 @@ import {
   BASE_PRECISION,
   QUOTE_PRECISION,
   convertToNumber,
+  PRICE_PRECISION,
 } from "@drift-labs/sdk";
 import { AgentConfig, Strategy, StrategyContext } from "./types.js";
 import { fetchSolPrice, PriceBuffer } from "./prices.js";
 import { applyRiskChecks } from "./risk.js";
 import { logger } from "./logger.js";
 import { SOL_PERP_MARKET_INDEX } from "./drift-client.js";
+import { sendTradeNotification, getAgentEmoji } from "./webhook.js";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -179,13 +181,25 @@ export async function runAgentLoop(
       }
 
       // 3. Build context
+      let availableCollateral = config.budget;
+      try {
+        const user = driftClient.getUser();
+        const totalValue = convertToNumber(
+          user.getNetSpotMarketValue(),
+          QUOTE_PRECISION
+        );
+        availableCollateral = Math.max(totalValue, 0);
+      } catch {
+        // Fall back to config budget
+      }
+
       const ctx: StrategyContext = {
         currentPrice: price,
         priceHistory: priceBuffer.prices,
         positionSize,
         entryPrice,
         unrealizedPnl,
-        availableCollateral: config.budget,
+        availableCollateral,
       };
 
       // 4. Evaluate strategy
@@ -220,6 +234,18 @@ export async function runAgentLoop(
             daily.realizedPnl += prevPnl;
             logger.info(`Realized PnL: $${prevPnl.toFixed(2)} | Daily total: $${daily.realizedPnl.toFixed(2)}`);
           }
+
+          // Send Discord/Telegram notification
+          sendTradeNotification({
+            agentName: config.name,
+            agentEmoji: getAgentEmoji(config.name),
+            action: signal.direction === "long" ? "LONG" : signal.direction === "short" ? "SHORT" : "CLOSE",
+            size: signal.size,
+            price,
+            reason: signal.reason,
+            unrealizedPnl,
+            dailyPnl: daily.realizedPnl,
+          }).catch(() => {}); // Fire and forget
         }
       }
     } catch (err) {

@@ -1,125 +1,117 @@
-#!/usr/bin/env npx tsx
-/**
- * Execute a SOL-PERP trade on Drift Protocol.
- * Usage:
- *   npx tsx scripts/trade.ts --direction long --size 0.5
- *   npx tsx scripts/trade.ts --direction short --size 0.3
- *   npx tsx scripts/trade.ts --direction close
- *   npx tsx scripts/trade.ts --direction close --size 0.2  (partial close)
- */
-import { Command } from "commander";
 import {
-  getDriftClient,
-  getPositionInfo,
-  fetchSolPrice,
-  output,
-  SOL_PERP_MARKET_INDEX,
+  DriftClient,
+  Wallet,
+  initialize,
+  getMarketsAndOraclesForSubscription,
   PositionDirection,
   BN,
-  convertToNumber,
   BASE_PRECISION,
-} from "./lib.js";
+  convertToNumber,
+} from "@drift-labs/sdk";
+import { Connection, Keypair } from "@solana/web3.js";
+import bs58 from "bs58";
 
-const program = new Command();
-program
-  .requiredOption("--direction <dir>", "Trade direction: long, short, or close")
-  .option("--size <size>", "Position size in SOL (omit for full close)", parseFloat);
+const SOL_PERP_MARKET_INDEX = 0;
 
-program.parse();
-const opts = program.opts();
+function parseArgs() {
+  const args = process.argv.slice(2);
+  let keyEnvName = "SHARK_PRIVATE_KEY";
+  let action = "";
+  let size = 0;
 
-async function main() {
-  try {
-    const client = await getDriftClient();
-    const direction = opts.direction as "long" | "short" | "close";
-    const size = opts.size as number | undefined;
-
-    if (direction === "close") {
-      const user = client.getUser();
-      const position = user.getPerpPosition(SOL_PERP_MARKET_INDEX);
-
-      if (!position || position.baseAssetAmount.isZero()) {
-        output({ ok: true, data: { action: "no_position", message: "No position to close" } });
-        await client.unsubscribe();
-        return;
-      }
-
-      const currentSize = Math.abs(
-        convertToNumber(position.baseAssetAmount, BASE_PRECISION)
-      );
-
-      if (size && size < currentSize * 0.95) {
-        // Partial close via opposite direction
-        const isLong = !position.baseAssetAmount.isNeg();
-        const closeDir = isLong ? PositionDirection.SHORT : PositionDirection.LONG;
-        const baseAmount = new BN(Math.floor(size * 1e9));
-        await client.openPosition(closeDir, baseAmount, SOL_PERP_MARKET_INDEX);
-
-        const { price } = await fetchSolPrice();
-        output({
-          ok: true,
-          data: {
-            action: "partial_close",
-            sizeClosed: size,
-            remainingSize: Number((currentSize - size).toFixed(6)),
-            price: Number(price.toFixed(4)),
-          },
-          timestamp: Date.now(),
-        });
-      } else {
-        // Full close
-        await client.closePosition(SOL_PERP_MARKET_INDEX);
-        const { price } = await fetchSolPrice();
-        output({
-          ok: true,
-          data: {
-            action: "full_close",
-            sizeClosed: currentSize,
-            price: Number(price.toFixed(4)),
-          },
-          timestamp: Date.now(),
-        });
-      }
-    } else {
-      // Open or increase position
-      if (!size || size <= 0) {
-        output({ ok: false, error: "Size required for long/short trades" });
-        process.exit(1);
-      }
-
-      const baseAmount = new BN(Math.floor(size * 1e9));
-      const perpDir =
-        direction === "long" ? PositionDirection.LONG : PositionDirection.SHORT;
-
-      await client.openPosition(perpDir, baseAmount, SOL_PERP_MARKET_INDEX);
-
-      const { price } = await fetchSolPrice();
-      const newPos = getPositionInfo(client);
-
-      output({
-        ok: true,
-        data: {
-          action: direction,
-          size,
-          price: Number(price.toFixed(4)),
-          newPosition: {
-            direction: newPos.direction,
-            totalSize: Number(newPos.size.toFixed(6)),
-            entryPrice: Number(newPos.entryPrice.toFixed(4)),
-          },
-        },
-        timestamp: Date.now(),
-      });
-    }
-
-    await client.unsubscribe();
-  } catch (err) {
-    output({
-      ok: false,
-      error: err instanceof Error ? err.message : String(err),
-    });
-    process.exit(1);
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--key" && args[i + 1]) keyEnvName = args[i + 1];
+    if (args[i] === "--action" && args[i + 1]) action = args[i + 1];
+    if (args[i] === "--size" && args[i + 1]) size = parseFloat(args[i + 1]);
   }
+
+  return { keyEnvName, action, size };
 }
 
-main();
+async function main() {
+  const { keyEnvName, action, size } = parseArgs();
+
+  if (!["long", "short", "close"].includes(action)) {
+    console.log(
+      JSON.stringify({ error: "Invalid action. Use: long, short, close" })
+    );
+    process.exit(1);
+  }
+
+  if ((action === "long" || action === "short") && size <= 0) {
+    console.log(JSON.stringify({ error: "Size must be > 0 for long/short" }));
+    process.exit(1);
+  }
+
+  const privateKey = process.env[keyEnvName];
+  if (!privateKey) {
+    console.log(JSON.stringify({ error: `${keyEnvName} not set` }));
+    process.exit(1);
+  }
+
+  const rpcUrl = process.env.SOLANA_RPC_URL!;
+  const env = (process.env.NETWORK || "devnet") as "devnet" | "mainnet-beta";
+
+  const keypair = Keypair.fromSecretKey(bs58.decode(privateKey));
+  const wallet = new Wallet(keypair as any);
+  const connection = new Connection(rpcUrl, {
+    commitment: "confirmed",
+    wsEndpoint: rpcUrl.replace("https", "wss"),
+  });
+
+  const sdkConfig = initialize({ env });
+  const { oracleInfos, perpMarketIndexes, spotMarketIndexes } =
+    getMarketsAndOraclesForSubscription(env);
+
+  const driftClient = new DriftClient({
+    connection: connection as any,
+    wallet: wallet as any,
+    programID: sdkConfig.DRIFT_PROGRAM_ID as any,
+    env,
+    perpMarketIndexes,
+    spotMarketIndexes,
+    oracleInfos,
+    accountSubscription: { type: "websocket" },
+  });
+
+  await driftClient.subscribe();
+
+  let txSig: string;
+
+  if (action === "close") {
+    const user = driftClient.getUser();
+    const position = user.getPerpPosition(SOL_PERP_MARKET_INDEX);
+    if (!position || position.baseAssetAmount.isZero()) {
+      console.log(JSON.stringify({ success: false, reason: "No position" }));
+      await driftClient.unsubscribe();
+      process.exit(0);
+    }
+    txSig = await driftClient.closePosition(SOL_PERP_MARKET_INDEX);
+  } else {
+    const direction =
+      action === "long" ? PositionDirection.LONG : PositionDirection.SHORT;
+    const baseAmount = new BN(Math.floor(size * 1e9));
+    txSig = await driftClient.openPosition(
+      direction,
+      baseAmount,
+      SOL_PERP_MARKET_INDEX
+    );
+  }
+
+  console.log(
+    JSON.stringify({
+      success: true,
+      action,
+      size: action === "close" ? "all" : size,
+      txSig,
+    })
+  );
+
+  await driftClient.unsubscribe();
+  process.exit(0);
+}
+
+main().catch((e) => {
+  console.log(JSON.stringify({ error: e.message }));
+  process.exit(1);
+});

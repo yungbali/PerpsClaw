@@ -1,24 +1,11 @@
 {
   "name": "perpsclaw-skill",
-  "version": "1.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "price": "tsx scripts/price.ts",
-    "position": "tsx scripts/position.ts",
-    "trade": "tsx scripts/trade.ts",
-    "balance": "tsx scripts/balance.ts",
-    "market": "tsx scripts/market.ts",
-    "risk-check": "tsx scripts/risk-check.ts"
-  },
   "dependencies": {
     "@drift-labs/sdk": "^2.107.0",
-    "@solana/web3.js": "^1.98.0",
+    "@solana/web3.js": "^1.98.4",
     "bs58": "^6.0.0",
-    "commander": "^12.1.0"
-  },
-  "devDependencies": {
-    "tsx": "^4.19.0",
-    "typescript": "^5.6.0"
+    "tsx": "^4.19.0"
   }
 }

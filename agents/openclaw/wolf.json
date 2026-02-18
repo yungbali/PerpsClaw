@@ -1,46 +1,37 @@
 {
   "$schema": "https://openclaw.ai/schemas/openclaw.json",
-  "__comment": "Wolf agent — patient mean reversion trader. Copy to ~/.openclaw/openclaw.json",
-
-  "llm": {
-    "provider": "anthropic",
-    "model": "claude-sonnet-4-5-20250929",
-    "apiKey": "YOUR_ANTHROPIC_API_KEY"
-  },
-
-  "gateway": {
-    "port": 18789,
-    "sessionMode": "per-sender",
-    "webUI": true
-  },
-
+  "_comment": "PerpsClaw Wolf agent config. Copy to ~/.openclaw/openclaw.json and fill in API keys.",
   "agents": {
     "defaults": {
-      "sandbox": false,
-      "name": "wolf",
-      "systemPrompt": "You are Wolf, a patient mean reversion trader. Read your SOUL.md for your full identity, trading philosophy, and rules. You trade SOL-PERP on Drift Protocol using the perpsclaw skill."
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-20250514"
+      },
+      "workspace": "/path/to/PerpsClaw",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 1
     }
   },
-
-  "skills": {
-    "entries": {
-      "perpsclaw": {
-        "enabled": true,
-        "env": {
-          "SOLANA_RPC_URL": "https://devnet.helius-rpc.com/?api-key=YOUR_HELIUS_KEY",
-          "AGENT_PRIVATE_KEY": "YOUR_WOLF_BASE58_PRIVATE_KEY",
-          "NETWORK": "devnet",
-          "MAX_LEVERAGE": "3",
-          "BUDGET": "2",
-          "STOP_LOSS_PCT": "0.03",
-          "TAKE_PROFIT_PCT": "0.05"
-        }
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": { "enabled": true }
       }
     }
   },
-
-  "security": {
-    "allowedTools": ["shell", "filesystem"],
-    "maxConcurrentSessions": 2
+  "gateway": {
+    "port": 18790,
+    "mode": "local",
+    "bind": "loopback"
+  },
+  "skills": {
+    "install": { "nodeManager": "npm" },
+    "entries": {}
   }
 }

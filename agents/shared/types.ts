@@ -4,7 +4,7 @@ export interface AgentConfig {
   name: string;
   keypairPath?: string;
   privateKey?: string;
-  /** SOL budget for this agent */
+  /** USD budget for this agent (notional value of collateral) */
   budget: number;
   /** Loop interval in milliseconds */
   loopIntervalMs: number;

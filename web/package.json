@@ -11,15 +11,18 @@
   "dependencies": {
     "@drift-labs/sdk": "^2.107.0",
     "@solana/web3.js": "^1.98.4",
+    "@vercel/analytics": "^1.1.0",
     "autoprefixer": "^10.4.24",
     "bs58": "^6.0.0",
     "buffer": "^6.0.3",
     "clsx": "^2.1.1",
+    "framer-motion": "^11.0.0",
     "geist": "^1.7.0",
     "lightweight-charts": "^4.2.3",
     "lucide-react": "^0.563.0",
     "next": "14.2.35",
     "react": "^18",
+    "react-countup": "^6.5.0",
     "react-dom": "^18",
     "tailwind-merge": "^3.4.0",
     "zustand": "^5.0.11"

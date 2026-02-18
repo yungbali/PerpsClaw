@@ -2,7 +2,7 @@ import { AgentConfig } from "../shared/types.js";
 
 export const gridConfig: AgentConfig = {
   name: "Grid",
-  budget: 1,
+  budget: 100,
   loopIntervalMs: 15_000,
   maxLeverage: 2,
   stopLossPct: 0.08, // wider stop for grid

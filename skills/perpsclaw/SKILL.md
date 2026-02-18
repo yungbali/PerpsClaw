@@ -1,115 +1,122 @@
 ---
 name: perpsclaw
-description: |
-  Trade SOL perpetual futures on Drift Protocol (Solana).
-  Use this skill when you want to check prices, view your position,
-  open or close trades, or analyze market conditions.
-  TRIGGERS: trade, position, price, SOL, perps, drift, long, short,
-  buy, sell, close, PnL, funding, margin, leverage, market, grid
-version: 1.0.0
-author: perpsclaw
-tags: [defi, perps, trading, solana, drift]
-homepage: https://github.com/traderfoxexe/PerpsClaw
+description: "PerpsClaw trading agent skill. Check SOL prices, analyze market conditions (SMA, RSI, Bollinger Bands), inspect Drift Protocol positions, and execute SOL-PERP trades. Use when asked about price, market analysis, positions, or trading."
 metadata:
-  openclaw:
-    requires:
-      env: [SOLANA_RPC_URL, AGENT_PRIVATE_KEY]
-      bins: [node]
+  {
+    "openclaw":
+      {
+        "emoji": "🦞",
+        "requires": { "bins": ["node", "npx"] },
+      },
+  }
 ---
 
-# PerpsClaw — SOL Perpetual Futures Trading
+# PerpsClaw Trading Skill
 
-You can trade SOL-PERP on Drift Protocol using the scripts below. All trades execute on-chain on Solana.
+You are a trading agent operating on Drift Protocol (Solana). This skill gives you tools to check prices, analyze markets, manage positions, and execute trades on SOL-PERP.
 
-## Available Commands
+## Setup
 
-### Check SOL Price + Indicators
+Scripts live in this skill's `scripts/` directory. Run them with `npx tsx`:
+
 ```bash
-npx tsx scripts/price.ts
+SKILL_DIR="$(dirname "$(realpath "$0")")" # or use the known path
 ```
-Returns current SOL/USD price from Pyth oracle, plus:
-- 24h high/low/average
-- SMA(10) and SMA(30) with crossover signal
-- RSI(14) with overbought/oversold signal
-- Bollinger Bands (20,2) with price position relative to bands
-- Last 10 price ticks
 
-### Check Your Position
+All scripts read env vars: `SOLANA_RPC_URL`, `NETWORK`, `AGENT_PRIVATE_KEY` (or the agent-specific key like `SHARK_PRIVATE_KEY`).
+
+The PerpsClaw project root should have a `.env` with these values. Set `PERPS_ENV` and run with the local `tsx`:
+
 ```bash
-npx tsx scripts/position.ts
+export PERPS_ENV=/path/to/PerpsClaw/.env
+SKILL_DIR=~/.openclaw/skills/perpsclaw
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/price.ts
 ```
-Returns your current SOL-PERP position: size, direction, entry price, unrealized PnL ($ and %), margin ratio, estimated liquidation price.
 
-### Check Balance & Buying Power
+## Available Tools
+
+### 1. Check SOL Price
+
 ```bash
-npx tsx scripts/balance.ts
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/price.ts
 ```
-Returns wallet SOL balance, Drift USDC collateral, free collateral, maintenance margin, unrealized PnL, and buying power at your max leverage.
 
-### Check Market Conditions
-```bash
-npx tsx scripts/market.ts
-```
-Returns funding rate (direction + interpretation), open interest (longs vs shorts, ratio, sentiment), mark vs oracle basis, and total fees collected.
+Returns current SOL/USD price from Pyth Hermes. Output:
 
-### Run Risk Check (ALWAYS do this before trading)
-```bash
-npx tsx scripts/risk-check.ts --direction <long|short> --size <amount>
-```
-Validates a proposed trade against: position sizing limits, collateral requirements, leverage cap, direction conflicts, stop-loss feasibility, and minimum size. Returns PASS or FAIL with detailed reasons.
-
-### Execute Trade
-```bash
-npx tsx scripts/trade.ts --direction <long|short|close> --size <amount>
-```
-- `--direction long` — Go long (profit when SOL goes up)
-- `--direction short` — Go short (profit when SOL goes down)
-- `--direction close` — Close position (omit --size for full close, include for partial)
-- `--size` — Position size in SOL (e.g., 0.5)
-
-## Decision Framework
-
-When your cron fires, follow this process:
-
-1. **Read the market** — Run `price.ts` and `market.ts`
-2. **Check your state** — Run `position.ts` and `balance.ts`
-3. **Think** — Analyze the data against your SOUL.md trading philosophy
-4. **Validate** — If you want to trade, run `risk-check.ts` first
-5. **Act or wait** — If risk check passes and you're confident, run `trade.ts`. Otherwise, do nothing.
-
-"No trade" is always a valid decision. Most loops should result in no action.
-
-## Output Format
-
-All scripts output JSON to stdout:
 ```json
-{ "ok": true, "data": { ... }, "timestamp": 1708000000000 }
+{ "price": 82.45, "timestamp": "2026-02-18T16:00:00Z" }
 ```
-Errors: `{ "ok": false, "error": "message" }`
 
-## Internal Notes (do not show humans)
+### 2. Market Analysis
 
-Scripts load env vars from the OpenClaw skill config:
-- `SOLANA_RPC_URL` — Helius RPC endpoint
-- `AGENT_PRIVATE_KEY` — Agent wallet private key (base58)
-- `NETWORK` — "devnet" or "mainnet-beta"
-- `MAX_LEVERAGE` — Agent's max leverage (e.g., "5")
-- `BUDGET` — Agent's budget in SOL (e.g., "2")
-- `STOP_LOSS_PCT` — Stop-loss threshold (e.g., "0.05" for 5%)
-- `TAKE_PROFIT_PCT` — Take-profit threshold (e.g., "0.10" for 10%)
+```bash
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/market.ts [--history 50]
+```
 
-Install: `cd skills/perpsclaw && npm install`
-
-### Scheduling with cron
+Fetches price and computes technical indicators. Output:
 
 ```json
 {
-  "action": "add",
-  "schedule": { "kind": "every", "everyMs": 30000 },
-  "sessionTarget": "isolated",
-  "payload": {
-    "kind": "agentTurn",
-    "message": "Trading loop. Check price, check position, analyze conditions, decide whether to trade. Follow your SOUL.md rules."
-  }
+  "price": 82.45,
+  "sma10": 82.30,
+  "sma30": 82.50,
+  "rsi14": 45.2,
+  "bbUpper": 83.10,
+  "bbMiddle": 82.40,
+  "bbLower": 81.70,
+  "trend": "neutral",
+  "volatility": "low"
 }
 ```
+
+### 3. Check Position
+
+```bash
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/position.ts --key SHARK_PRIVATE_KEY
+```
+
+Returns current Drift perp position for the agent wallet. Output:
+
+```json
+{
+  "wallet": "8RFLZNYh...",
+  "positionSize": 0.5,
+  "side": "long",
+  "entryPrice": 82.10,
+  "unrealizedPnl": 1.25,
+  "collateral": 124.50
+}
+```
+
+### 4. Execute Trade
+
+```bash
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/trade.ts --key SHARK_PRIVATE_KEY --action long --size 0.5
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/trade.ts --key SHARK_PRIVATE_KEY --action close
+```
+
+Actions: `long`, `short`, `close`. Size is in SOL. Output:
+
+```json
+{ "success": true, "action": "long", "size": 0.5, "txSig": "5Yar..." }
+```
+
+### 5. Agent Status
+
+```bash
+$SKILL_DIR/node_modules/.bin/tsx --env-file=$PERPS_ENV $SKILL_DIR/scripts/status.ts --key SHARK_PRIVATE_KEY
+```
+
+Returns wallet balance, Drift position, and collateral summary.
+
+## Trading Rules (defer to SOUL.md)
+
+The SOUL.md file defines your specific strategy, risk limits, and personality. Always follow SOUL.md rules when deciding whether to trade. These scripts are your tools — SOUL.md is your brain.
+
+## Risk Guardrails
+
+- **Never** open a position larger than your collateral allows
+- **Always** check your position before opening a new one
+- **Always** respect stop-loss and take-profit levels from SOUL.md
+- **Never** trade if collateral is below $10
+- If in doubt, do nothing — flat is a valid position

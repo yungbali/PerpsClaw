@@ -2,7 +2,7 @@ import { AgentConfig } from "../shared/types.js";
 
 export const wolfConfig: AgentConfig = {
   name: "Wolf",
-  budget: 1,
+  budget: 100,
   loopIntervalMs: 45_000,
   maxLeverage: 3,
   stopLossPct: 0.03,

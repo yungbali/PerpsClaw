@@ -1,0 +1,73 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#06080c"/>
+
+  <!-- Grain texture overlay -->
+  <filter id="noise">
+    <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+  </filter>
+  <rect width="1200" height="630" opacity="0.025" filter="url(#noise)"/>
+
+  <!-- Gradient glows -->
+  <circle cx="200" cy="150" r="250" fill="#ff6b35" opacity="0.08" filter="blur(80px)"/>
+  <circle cx="1000" cy="480" r="300" fill="#8b5cf6" opacity="0.08" filter="blur(80px)"/>
+  <circle cx="600" cy="315" r="200" fill="#06b6d4" opacity="0.05" filter="blur(60px)"/>
+
+  <!-- Content -->
+  <g>
+    <!-- Logo/Icon -->
+    <rect x="100" y="80" width="80" height="80" rx="16" fill="url(#logo-gradient)"/>
+    <defs>
+      <linearGradient id="logo-gradient" x1="100" y1="80" x2="180" y2="160" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#ff6b35"/>
+        <stop offset="1" stop-color="#8b5cf6"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Brand name -->
+    <text x="200" y="140" font-family="Syne, sans-serif" font-weight="800" font-size="56" fill="#e8edf4">
+      PerpsClaw
+    </text>
+
+    <!-- Main headline -->
+    <text x="100" y="260" font-family="Syne, sans-serif" font-weight="700" font-size="72" fill="#e8edf4">
+      3 AI Agents.
+    </text>
+    <text x="100" y="350" font-family="Syne, sans-serif" font-weight="700" font-size="72">
+      <tspan fill="#e8edf4">Live Trading. </tspan>
+      <tspan fill="#ff6b35">Solana.</tspan>
+    </text>
+
+    <!-- Agent icons with colors -->
+    <g transform="translate(100, 420)">
+      <!-- Shark -->
+      <rect width="80" height="80" rx="12" fill="#ff6b35" opacity="0.15"/>
+      <rect x="2" y="2" width="76" height="76" rx="10" fill="none" stroke="#ff6b35" stroke-width="2"/>
+      <text x="40" y="55" font-size="40" text-anchor="middle">🦈</text>
+
+      <!-- Wolf -->
+      <rect x="100" width="80" height="80" rx="12" fill="#8b5cf6" opacity="0.15"/>
+      <rect x="102" y="2" width="76" height="76" rx="10" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+      <text x="140" y="55" font-size="40" text-anchor="middle">🐺</text>
+
+      <!-- Grid -->
+      <rect x="200" width="80" height="80" rx="12" fill="#06b6d4" opacity="0.15"/>
+      <rect x="202" y="2" width="76" height="76" rx="10" fill="none" stroke="#06b6d4" stroke-width="2"/>
+      <text x="240" y="55" font-size="40" text-anchor="middle">⚡</text>
+    </g>
+
+    <!-- Stats (placeholder) -->
+    <g transform="translate(700, 420)">
+      <rect width="400" height="120" rx="16" fill="#0a0e14" opacity="0.8" stroke="#1a2233" stroke-width="1"/>
+      <text x="30" y="45" font-family="JetBrains Mono, monospace" font-size="20" fill="#5a6b80">Total PnL</text>
+      <text x="30" y="85" font-family="Syne, sans-serif" font-weight="700" font-size="36" fill="#00ff88">+$247.50</text>
+      <text x="250" y="45" font-family="JetBrains Mono, monospace" font-size="20" fill="#5a6b80">Trades</text>
+      <text x="250" y="85" font-family="Syne, sans-serif" font-weight="700" font-size="36" fill="#00d4ff">156</text>
+    </g>
+
+    <!-- Bottom text -->
+    <text x="100" y="580" font-family="JetBrains Mono, monospace" font-size="18" fill="#5a6b80">
+      Autonomous perpetual futures trading on Drift Protocol
+    </text>
+  </g>
+</svg>

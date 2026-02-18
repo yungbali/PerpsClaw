@@ -1,46 +1,37 @@
 {
   "$schema": "https://openclaw.ai/schemas/openclaw.json",
-  "__comment": "Grid agent — systematic market maker. Copy to ~/.openclaw/openclaw.json",
-
-  "llm": {
-    "provider": "anthropic",
-    "model": "claude-haiku-4-5-20251001",
-    "apiKey": "YOUR_ANTHROPIC_API_KEY"
-  },
-
-  "gateway": {
-    "port": 18789,
-    "sessionMode": "per-sender",
-    "webUI": true
-  },
-
+  "_comment": "PerpsClaw Grid agent config. Copy to ~/.openclaw/openclaw.json and fill in API keys.",
   "agents": {
     "defaults": {
-      "sandbox": false,
-      "name": "grid",
-      "systemPrompt": "You are Grid, a systematic market-making agent. Read your SOUL.md for your full identity, trading philosophy, grid management rules, and risk parameters. You trade SOL-PERP on Drift Protocol using the perpsclaw skill."
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-20250514"
+      },
+      "workspace": "/path/to/PerpsClaw",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 1
     }
   },
-
-  "skills": {
-    "entries": {
-      "perpsclaw": {
-        "enabled": true,
-        "env": {
-          "SOLANA_RPC_URL": "https://devnet.helius-rpc.com/?api-key=YOUR_HELIUS_KEY",
-          "AGENT_PRIVATE_KEY": "YOUR_GRID_BASE58_PRIVATE_KEY",
-          "NETWORK": "devnet",
-          "MAX_LEVERAGE": "2",
-          "BUDGET": "2",
-          "STOP_LOSS_PCT": "0.07",
-          "TAKE_PROFIT_PCT": "0.03"
-        }
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "session-memory": { "enabled": true }
       }
     }
   },
-
-  "security": {
-    "allowedTools": ["shell", "filesystem"],
-    "maxConcurrentSessions": 2
+  "gateway": {
+    "port": 18791,
+    "mode": "local",
+    "bind": "loopback"
+  },
+  "skills": {
+    "install": { "nodeManager": "npm" },
+    "entries": {}
   }
 }

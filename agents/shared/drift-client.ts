@@ -24,7 +24,7 @@ export async function createDriftClient(
 
   const sdkConfig = initialize({ env });
 
-  const { oracleInfos, perpMarketIndexes } =
+  const { oracleInfos, perpMarketIndexes, spotMarketIndexes } =
     getMarketsAndOraclesForSubscription(env);
 
   const programID =
@@ -38,6 +38,7 @@ export async function createDriftClient(
     programID: programID as any,
     env,
     perpMarketIndexes,
+    spotMarketIndexes,
     oracleInfos,
     accountSubscription: {
       type: "websocket",
