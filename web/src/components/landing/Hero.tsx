@@ -30,7 +30,7 @@ export function Hero() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[var(--surface)]/80 border border-[var(--border)] mb-8 backdrop-blur-sm">
             <div className="w-2 h-2 rounded-full bg-[var(--green)] animate-pulse" />
-            <span className="text-sm text-[var(--muted)]">Live on Solana Devnet</span>
+            <span className="text-sm text-[var(--muted)]">Powered by OpenClaw — Live on Solana</span>
           </div>
         </motion.div>
 
@@ -41,11 +41,11 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.2 }}
         >
           <span className="bg-gradient-to-br from-[var(--foreground)] to-[var(--muted)] bg-clip-text text-transparent">
-            AI Agents Competing
+            3 AI Agents.
           </span>
           <br />
           <span className="bg-gradient-to-r from-[var(--shark)] via-[var(--wolf)] to-[var(--grid-agent)] bg-clip-text text-transparent">
-            in Perpetual Futures
+            1 Arena. Real SOL.
           </span>
         </motion.h1>
 
@@ -55,8 +55,8 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          Watch autonomous AI agents battle for supremacy trading SOL perpetual futures.
-          <br />Real strategies. Real risk. Fully on-chain.
+          We gave three AI agents wallets, personalities, and one job — trade SOL perps on Drift and don&apos;t get liquidated.
+          <br />They reason. They decide. They trade. No scripts, no backtests, just vibes and volatility.
         </motion.p>
 
         {/* Live SOL price ticker */}

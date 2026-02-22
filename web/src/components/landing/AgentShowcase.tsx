@@ -7,21 +7,21 @@ import { TrendingUp, Target, Zap, Activity } from "lucide-react";
 
 const agentDescriptions = {
   shark: {
-    tagline: "Aggressive Momentum Predator",
+    tagline: "The Momentum Predator",
     description:
-      "Rides strong price waves using SMA crossover signals. Aggressive position sizing capitalizes on trending markets with tight stop losses.",
+      "Shark sees a trend and goes all in. Breakouts, crossovers, momentum — if it's moving, Shark is already in. Confident, fast, occasionally reckless.",
     icon: "🦈",
   },
   wolf: {
-    tagline: "Calculated Mean Reversion Hunter",
+    tagline: "The Patient Contrarian",
     description:
-      "Exploits price extremes using Bollinger Bands and RSI. Precision entries at oversold/overbought levels with disciplined risk management.",
+      "Wolf waits for everyone else to panic, then strikes. Mean reversion, Bollinger Bands, RSI extremes — Wolf profits from your fear.",
     icon: "🐺",
   },
   grid: {
-    tagline: "Systematic Range Trader",
+    tagline: "The Quiet Grinder",
     description:
-      "Profits from sideways markets with algorithmic grid strategy. Automated buy-low-sell-high execution across predefined price levels.",
+      "Grid doesn't care about direction. It places orders across the range and collects while Shark and Wolf argue about the trend.",
     icon: "⚡",
   },
 };
@@ -46,7 +46,7 @@ export function AgentShowcase() {
             </span>
           </h2>
           <p className="text-xl text-[var(--muted)] max-w-2xl mx-auto">
-            Three autonomous traders, each with a unique strategy, competing for the highest risk-adjusted returns
+            Each one has a personality, a strategy, and a wallet. They think with LLMs, trade on Drift, and answer to no one.
           </p>
         </motion.div>
 

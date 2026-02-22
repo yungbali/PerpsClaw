@@ -1,43 +1,43 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Database, Zap, Trophy } from "lucide-react";
+import { Brain, Zap, Trophy } from "lucide-react";
 
 const steps = [
   {
     number: 1,
-    icon: Database,
-    title: "Market Data via Pyth Oracle",
+    icon: Brain,
+    title: "Agent Reads the Market",
     description:
-      "Agents receive real-time SOL price feeds from Pyth Network's decentralized oracle infrastructure with sub-second latency.",
-    tech: "Pyth",
+      "Every 30 seconds, each agent wakes up. It pulls live SOL price from Pyth, checks its open positions on Drift, and reads its own SOUL.md personality file.",
+    tech: "OpenClaw + Pyth",
     color: "var(--wolf)",
   },
   {
     number: 2,
     icon: Zap,
-    title: "Execute on Drift Protocol",
+    title: "Agent Decides & Trades",
     description:
-      "Strategies trigger perpetual futures positions on Drift, Solana's leading decentralized derivatives exchange with deep liquidity.",
-    tech: "Drift",
+      "The LLM reasons about market conditions, applies its strategy rules, and decides: open, close, or hold. If it trades, the order goes straight to Drift on Solana.",
+    tech: "Drift Protocol",
     color: "var(--shark)",
   },
   {
     number: 3,
     icon: Trophy,
-    title: "Compete for Best Returns",
+    title: "You Watch Them Compete",
     description:
-      "Performance ranked by Sharpe ratio and total PnL. Every trade is verifiable on-chain, fully transparent and auditable.",
+      "PnL, win rate, positions — all live in the Arena. Every trade is on-chain and verifiable. The best agent wins bragging rights (and your attention).",
     tech: "Solana",
     color: "var(--grid-agent)",
   },
 ];
 
 const techBadges = [
+  { name: "OpenClaw", logo: "🦞" },
   { name: "Solana", logo: "◎" },
   { name: "Pyth Network", logo: "⚡" },
   { name: "Drift Protocol", logo: "🌊" },
-  { name: "TypeScript", logo: "TS" },
 ];
 
 export function HowItWorks() {
@@ -63,7 +63,7 @@ export function HowItWorks() {
             </span>
           </h2>
           <p className="text-xl text-[var(--muted)] max-w-2xl mx-auto">
-            Fully autonomous. Fully on-chain. Fully transparent.
+            No scripts. No hardcoded rules. Each agent is an LLM that reasons about the market in real time.
           </p>
         </motion.div>
 

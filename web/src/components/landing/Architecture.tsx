@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 export function Architecture() {
   const flow = [
-    { name: "Pyth Oracle", color: "var(--wolf)", symbol: "⚡" },
+    { name: "OpenClaw", color: "var(--wolf)", symbol: "🦞" },
     { name: "AI Agents", color: "var(--shark)", symbol: "🤖" },
     { name: "Drift Protocol", color: "var(--grid-agent)", symbol: "🌊" },
     { name: "Solana", color: "var(--green)", symbol: "◎" },
@@ -28,11 +28,11 @@ export function Architecture() {
             </span>
           </h2>
           <p className="text-xl text-[var(--muted)] max-w-2xl mx-auto mb-6">
-            End-to-end autonomous trading on Solana's fastest infrastructure
+            OpenClaw runs the agents. Drift executes the trades. Solana settles everything.
           </p>
           <div className="inline-block px-6 py-3 rounded-full border border-[var(--border-2)] bg-[var(--surface)]/80 backdrop-blur-sm">
             <span className="font-['Syne'] font-bold text-2xl bg-gradient-to-r from-[var(--green)] via-[var(--cyan)] to-[var(--shark)] bg-clip-text text-transparent">
-              Real. Autonomous. On-Chain.
+              No humans in the loop.
             </span>
           </div>
         </motion.div>
@@ -133,14 +133,14 @@ export function Architecture() {
           <div className="p-6 rounded-xl bg-[var(--surface)]/80 border border-[var(--border)] backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-lg bg-[var(--wolf)]/20 flex items-center justify-center">
-                <span className="text-xl">⚡</span>
+                <span className="text-xl">🦞</span>
               </div>
               <h3 className="font-['Syne'] font-bold text-xl text-[var(--foreground)]">
-                Real-Time Data
+                OpenClaw Runtime
               </h3>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              Pyth Network delivers institutional-grade price feeds with sub-second updates. Agents react to market movements instantly with high-confidence data.
+              Each agent runs as an isolated OpenClaw instance with its own SOUL.md, skills, and wallet. The LLM reasons about the market every 30 seconds.
             </p>
           </div>
 
@@ -150,25 +150,25 @@ export function Architecture() {
                 <span className="text-xl">🌊</span>
               </div>
               <h3 className="font-['Syne'] font-bold text-xl text-[var(--foreground)]">
-                Decentralized Trading
+                Drift Protocol
               </h3>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              Drift Protocol enables leveraged perpetual futures with on-chain order matching, automated liquidations, and zero custodial risk.
+              Leveraged perpetual futures with on-chain order matching. When an agent decides to trade, the order goes straight to Drift — no middlemen.
             </p>
           </div>
 
           <div className="p-6 rounded-xl bg-[var(--surface)]/80 border border-[var(--border)] backdrop-blur-sm">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-lg bg-[var(--shark)]/20 flex items-center justify-center">
-                <span className="text-xl">🤖</span>
+                <span className="text-xl">🧠</span>
               </div>
               <h3 className="font-['Syne'] font-bold text-xl text-[var(--foreground)]">
-                Autonomous Agents
+                LLM-Powered Decisions
               </h3>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              TypeScript-based trading bots run 24/7 with proven strategies. No human intervention—pure algorithmic execution based on technical signals.
+              Not scripts. Not backtests. Each agent uses a large language model to analyze price action, evaluate risk, and decide whether to trade.
             </p>
           </div>
 
@@ -178,11 +178,11 @@ export function Architecture() {
                 <span className="text-xl">◎</span>
               </div>
               <h3 className="font-['Syne'] font-bold text-xl text-[var(--foreground)]">
-                Solana Speed
+                Solana Settlement
               </h3>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              Sub-400ms block times and ultra-low fees enable high-frequency strategies impossible on slower chains. Every trade settles in milliseconds.
+              Every trade settles on Solana. Sub-second finality, negligible fees, fully verifiable. Check the agents&apos; wallets yourself.
             </p>
           </div>
         </motion.div>

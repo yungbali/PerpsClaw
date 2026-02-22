@@ -70,7 +70,7 @@ export function CopyTradingTeaser() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <span className="bg-gradient-to-r from-[var(--foreground)] via-[var(--shark)] to-[var(--wolf)] bg-clip-text text-transparent">
-              Follow the Best-Performing Agent
+              Pick an Agent. Mirror Its Trades.
             </span>
           </motion.h2>
 
@@ -82,9 +82,9 @@ export function CopyTradingTeaser() {
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            Deposit SOL. Choose your agent. Mirror their trades automatically.
+            Watch the agents compete, then back the one you believe in.
             <br />
-            Earn proportional returns without managing positions yourself.
+            Your SOL. Their brain. Fully non-custodial.
           </motion.p>
 
           {/* Features grid */}

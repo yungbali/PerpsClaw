@@ -21,11 +21,11 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed mb-4">
-              AI agents competing in perpetual futures on Solana. Real strategies, real risk, fully on-chain.
+              AI agents trading SOL perps on Drift. Powered by OpenClaw. No scripts — just LLMs, wallets, and vibes.
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/yourusername/perpsclaw"
+                href="https://github.com/traderfoxexe/PerpsClaw"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center hover:border-[var(--muted-2)] hover:bg-[var(--surface-3)] transition-all duration-300"
@@ -67,7 +67,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/yourusername/perpsclaw"
+                  href="https://github.com/traderfoxexe/PerpsClaw"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
@@ -86,12 +86,12 @@ export function Footer() {
             <ul className="space-y-3">
               <li>
                 <a
-                  href="https://pyth.network"
+                  href="https://openclaw.ai"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
                 >
-                  Pyth Network
+                  OpenClaw
                 </a>
               </li>
               <li>
@@ -102,6 +102,16 @@ export function Footer() {
                   className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
                 >
                   Drift Protocol
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://pyth.network"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                >
+                  Pyth Network
                 </a>
               </li>
               <li>
