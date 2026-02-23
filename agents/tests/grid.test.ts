@@ -5,7 +5,7 @@ import { StrategyContext } from "../shared/types.js";
 function makeCtx(overrides: Partial<StrategyContext> = {}): StrategyContext {
   return {
     currentPrice: 200,
-    priceHistory: Array(10).fill(200),
+    priceHistory: Array(30).fill(200), // Need 20+ for grid strategy
     positionSize: 0,
     entryPrice: 0,
     unrealizedPnl: 0,
@@ -37,7 +37,7 @@ describe("Grid Strategy", () => {
     // Price drops through a buy level (~0.5% below 200 = ~199)
     const ctx2 = makeCtx({
       currentPrice: 198.5,
-      priceHistory: [...Array(9).fill(200), 198.5],
+      priceHistory: [...Array(29).fill(200), 198.5],
     });
     const signal = gridStrategy.evaluate(ctx2);
 
@@ -58,7 +58,7 @@ describe("Grid Strategy", () => {
     // Now price rises through a sell level (~0.5% above 200 = ~201)
     const ctx2 = makeCtx({
       currentPrice: 201.5,
-      priceHistory: [...Array(9).fill(200), 201.5],
+      priceHistory: [...Array(29).fill(200), 201.5],
       positionSize: 0.3, // holding 3 grid levels worth of longs
     });
     const signal = gridStrategy.evaluate(ctx2);
@@ -79,12 +79,12 @@ describe("Grid Strategy", () => {
     // Price jumps 6% to 212
     const ctx2 = makeCtx({
       currentPrice: 212,
-      priceHistory: [...Array(9).fill(200), 212],
+      priceHistory: [...Array(29).fill(200), 212],
     });
     const signal = gridStrategy.evaluate(ctx2);
 
     expect(signal.direction).toBe("none");
-    expect(signal.reason).toContain("Grid initialized");
+    expect(signal.reason).toContain("Grid reinitialized");
   });
 
   it("signals short at sell level when no position", () => {
@@ -95,7 +95,7 @@ describe("Grid Strategy", () => {
     // Price rises through sell level with no position
     const ctx2 = makeCtx({
       currentPrice: 201.5,
-      priceHistory: [...Array(9).fill(200), 201.5],
+      priceHistory: [...Array(29).fill(200), 201.5],
       positionSize: 0,
     });
     const signal = gridStrategy.evaluate(ctx2);

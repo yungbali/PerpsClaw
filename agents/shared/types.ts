@@ -1,4 +1,7 @@
 import { PublicKey } from "@solana/web3.js";
+import type { MarketRegime } from "./indicators.js";
+import type { RegimeState } from "./regime.js";
+import type { AggregateMarketData } from "./market-data.js";
 
 export interface AgentConfig {
   name: string;
@@ -10,12 +13,24 @@ export interface AgentConfig {
   loopIntervalMs: number;
   /** Max leverage */
   maxLeverage: number;
-  /** Stop loss percentage (0-1) */
+  /** Stop loss percentage (0-1) - used as fallback, ATR-based preferred */
   stopLossPct: number;
-  /** Take profit percentage (0-1) */
+  /** Take profit percentage (0-1) - used as fallback, ATR-based preferred */
   takeProfitPct: number;
   /** Drift market index for SOL-PERP */
   marketIndex: number;
+  /** ATR multiplier for stop loss (default 2.0) */
+  atrStopMultiplier?: number;
+  /** ATR multiplier for take profit (default 3.0) */
+  atrTakeProfitMultiplier?: number;
+  /** Enable adaptive parameters based on volatility */
+  useAdaptiveParams?: boolean;
+  /** Enable regime-based trading (only trade when regime matches strategy) */
+  useRegimeFilter?: boolean;
+  /** Historical win rate for Kelly sizing (0-1) */
+  winRate?: number;
+  /** Average win/loss ratio for Kelly sizing */
+  avgWinLossRatio?: number;
 }
 
 export interface TradeSignal {
@@ -38,6 +53,24 @@ export interface StrategyContext {
   unrealizedPnl: number;
   /** Available collateral in SOL */
   availableCollateral: number;
+  /** Enhanced: Current ATR value */
+  atr?: number;
+  /** Enhanced: ATR as percentage of price */
+  atrPercent?: number;
+  /** Enhanced: Average ATR (30-period) for volatility comparison */
+  avgAtr?: number;
+  /** Enhanced: Hurst exponent (0-1) */
+  hurst?: number;
+  /** Enhanced: Market regime classification */
+  regime?: MarketRegime;
+  /** Enhanced: Full regime state */
+  regimeState?: RegimeState;
+  /** Enhanced: Aggregate market data (funding, OI, sentiment) */
+  marketData?: AggregateMarketData;
+  /** Enhanced: RSI value */
+  rsi?: number;
+  /** Enhanced: ADX value (trend strength) */
+  adx?: number;
 }
 
 export interface Strategy {

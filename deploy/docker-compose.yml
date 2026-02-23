@@ -8,6 +8,10 @@ services:
     ports:
       - "3000:3000"
     env_file: ../.env
+    environment:
+      - REPORTS_DIR=/app/reports
+    volumes:
+      - ../reports:/app/reports:ro
     restart: unless-stopped
     deploy:
       resources:

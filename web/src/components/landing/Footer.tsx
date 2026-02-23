@@ -58,6 +58,14 @@ export function Footer() {
                 </Link>
               </li>
               <li>
+                <Link
+                  href="/reports"
+                  className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
+                >
+                  Reports
+                </Link>
+              </li>
+              <li>
                 <a
                   href="#performance"
                   className="text-sm text-[var(--muted)] hover:text-[var(--foreground)] transition-colors"
