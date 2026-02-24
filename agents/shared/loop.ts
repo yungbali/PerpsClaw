@@ -8,8 +8,9 @@ import {
   PRICE_PRECISION,
 } from "@drift-labs/sdk";
 import { AgentConfig, Strategy, StrategyContext } from "./types.js";
-import { fetchSolPrice, PriceBuffer } from "./prices.js";
+import { fetchSolPrice, PriceBuffer, OHLCBuffer } from "./prices.js";
 import { applyRiskChecks } from "./risk.js";
+import { atrOHLC, atrPercentOHLC } from "./indicators.js";
 import { logger } from "./logger.js";
 import { SOL_PERP_MARKET_INDEX } from "./drift-client.js";
 import { sendTradeNotification, getAgentEmoji } from "./webhook.js";
@@ -116,6 +117,8 @@ export async function runAgentLoop(
   config: AgentConfig
 ) {
   const priceBuffer = new PriceBuffer(200);
+  // OHLC buffer: 1-minute candles for accurate ATR calculation
+  const ohlcBuffer = new OHLCBuffer(60_000, 100);
   let running = true;
   let consecutiveErrors = 0;
   let lastTradeTime = 0;
@@ -166,9 +169,11 @@ export async function runAgentLoop(
         continue;
       }
 
-      // 1. Fetch price
+      // 1. Fetch price and update buffers
       const price = await fetchSolPrice();
+      const timestamp = Date.now();
       priceBuffer.push(price);
+      ohlcBuffer.push(price, timestamp); // Build OHLC candles from samples
       consecutiveErrors = 0; // Reset on success
 
       // 2. Get current position
@@ -193,13 +198,23 @@ export async function runAgentLoop(
         // Fall back to config budget
       }
 
+      // Calculate ATR from OHLC candles if we have enough data (more accurate)
+      const ohlcCandles = ohlcBuffer.completeCandles;
+      const hasOHLC = ohlcCandles.length >= 15; // Need 15 candles for 14-period ATR
+      const atrValue = hasOHLC ? atrOHLC(ohlcCandles, 14) : undefined;
+      const atrPct = hasOHLC ? atrPercentOHLC(ohlcCandles, 14) : undefined;
+
       const ctx: StrategyContext = {
         currentPrice: price,
         priceHistory: priceBuffer.prices,
+        ohlcHistory: hasOHLC ? ohlcCandles : undefined,
         positionSize,
         entryPrice,
         unrealizedPnl,
         availableCollateral,
+        // Pre-calculated ATR from OHLC (more accurate than close-only)
+        atr: atrValue,
+        atrPercent: atrPct,
       };
 
       // 4. Evaluate strategy

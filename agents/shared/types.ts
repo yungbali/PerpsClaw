@@ -3,6 +3,29 @@ import type { MarketRegime } from "./indicators.js";
 import type { RegimeState } from "./regime.js";
 import type { AggregateMarketData } from "./market-data.js";
 
+// ============================================================================
+// OHLC CANDLE DATA
+// ============================================================================
+
+/**
+ * OHLC Candle - represents price action within a time period.
+ * Used for accurate True Range and ATR calculations.
+ */
+export interface OHLCCandle {
+  /** Candle open timestamp (ms) */
+  timestamp: number;
+  /** Opening price */
+  open: number;
+  /** Highest price during period */
+  high: number;
+  /** Lowest price during period */
+  low: number;
+  /** Closing price */
+  close: number;
+  /** Whether candle is complete (period ended) */
+  complete: boolean;
+}
+
 export interface AgentConfig {
   name: string;
   keypairPath?: string;
@@ -45,6 +68,8 @@ export interface TradeSignal {
 export interface StrategyContext {
   currentPrice: number;
   priceHistory: number[];
+  /** OHLC candle history for accurate ATR calculation */
+  ohlcHistory?: OHLCCandle[];
   /** Current position size (positive = long, negative = short) */
   positionSize: number;
   /** Current position entry price */

@@ -8,6 +8,8 @@
  * - Kelly Criterion for position sizing
  */
 
+import type { OHLCCandle } from "./types.js";
+
 // ============================================================================
 // CORE INDICATOR FUNCTIONS
 // ============================================================================
@@ -76,10 +78,21 @@ export function rsi(prices: number[], period: number = 14): number {
 // ============================================================================
 
 /**
- * True Range for a single candle
+ * Calculate True Range from OHLC candle data (accurate method).
  * TR = max(high - low, abs(high - prevClose), abs(low - prevClose))
- *
- * For price-only data, we approximate using price changes
+ */
+export function trueRangeOHLC(candle: OHLCCandle, prevClose: number): number {
+  const highLow = candle.high - candle.low;
+  const highPrevClose = Math.abs(candle.high - prevClose);
+  const lowPrevClose = Math.abs(candle.low - prevClose);
+
+  return Math.max(highLow, highPrevClose, lowPrevClose);
+}
+
+/**
+ * True Range for close-only data (legacy approximation).
+ * Uses 2x multiplier to better estimate actual range from close-to-close changes.
+ * This is a fallback when OHLC data is unavailable.
  */
 export function trueRange(prices: number[], index: number): number {
   if (index < 1) return 0;
@@ -88,15 +101,47 @@ export function trueRange(prices: number[], index: number): number {
   const prev = prices[index - 1];
 
   // Estimate high/low from price movement (approximation for close-only data)
+  // Increased from 1.5x to 2.0x to better approximate actual True Range
   const priceChange = Math.abs(current - prev);
-  const estimatedRange = priceChange * 1.5; // Typical range is ~1.5x the close-to-close change
+  const estimatedRange = priceChange * 2.0;
 
   return Math.max(priceChange, estimatedRange);
 }
 
 /**
- * Average True Range (ATR)
- * Measures market volatility
+ * Average True Range using OHLC candle data (accurate method).
+ * Use this when OHLC data is available for proper volatility measurement.
+ *
+ * @param candles - Array of OHLC candles
+ * @param period - ATR period (default 14)
+ * @returns ATR value
+ */
+export function atrOHLC(candles: OHLCCandle[], period: number = 14): number {
+  if (candles.length < period + 1) return 0;
+
+  // Calculate true ranges from OHLC data
+  const trueRanges: number[] = [];
+  for (let i = 1; i < candles.length; i++) {
+    const tr = trueRangeOHLC(candles[i], candles[i - 1].close);
+    trueRanges.push(tr);
+  }
+
+  if (trueRanges.length < period) return 0;
+
+  // Simple moving average of true ranges for initial ATR
+  let atrValue = trueRanges.slice(0, period).reduce((a, b) => a + b, 0) / period;
+
+  // Smooth using Wilder's method
+  for (let i = period; i < trueRanges.length; i++) {
+    atrValue = (atrValue * (period - 1) + trueRanges[i]) / period;
+  }
+
+  return atrValue;
+}
+
+/**
+ * Average True Range (ATR) from close prices only (legacy/fallback method).
+ * Measures market volatility using approximated True Range.
  *
  * @param prices - Array of closing prices
  * @param period - ATR period (default 14)
@@ -105,10 +150,10 @@ export function trueRange(prices: number[], index: number): number {
 export function atr(prices: number[], period: number = 14): number {
   if (prices.length < period + 1) return 0;
 
-  // Calculate true ranges
+  // Calculate true ranges using approximation
   const trueRanges: number[] = [];
   for (let i = 1; i < prices.length; i++) {
-    const tr = Math.abs(prices[i] - prices[i - 1]);
+    const tr = trueRange(prices, i);
     trueRanges.push(tr);
   }
 
@@ -126,7 +171,17 @@ export function atr(prices: number[], period: number = 14): number {
 }
 
 /**
- * ATR as percentage of current price
+ * ATR as percentage of current price (OHLC version).
+ */
+export function atrPercentOHLC(candles: OHLCCandle[], period: number = 14): number {
+  if (candles.length === 0) return 0;
+  const currentPrice = candles[candles.length - 1].close;
+  if (currentPrice === 0) return 0;
+  return (atrOHLC(candles, period) / currentPrice) * 100;
+}
+
+/**
+ * ATR as percentage of current price (close-only fallback).
  */
 export function atrPercent(prices: number[], period: number = 14): number {
   const currentPrice = prices[prices.length - 1];
@@ -135,7 +190,18 @@ export function atrPercent(prices: number[], period: number = 14): number {
 }
 
 /**
- * Calculate ATR-based stop loss distance
+ * Calculate ATR-based stop loss distance (OHLC version).
+ */
+export function atrStopDistanceOHLC(
+  candles: OHLCCandle[],
+  multiplier: number = 2.0,
+  period: number = 14
+): number {
+  return atrOHLC(candles, period) * multiplier;
+}
+
+/**
+ * Calculate ATR-based stop loss distance (close-only fallback).
  *
  * @param prices - Price history
  * @param multiplier - ATR multiplier (default 2.0)
