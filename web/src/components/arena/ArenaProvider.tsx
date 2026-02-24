@@ -2,17 +2,18 @@
 
 import { useEffect, useRef } from "react";
 import { usePrices } from "@/hooks/usePrices";
+import { useAgentPositions } from "@/hooks/useAgentPositions";
 import { useAgentStore } from "@/stores/useAgentStore";
-import { Hero } from "@/components/landing/Hero";
-import { LiveStats } from "@/components/landing/LiveStats";
-import { AgentShowcase } from "@/components/landing/AgentShowcase";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { PerformancePreview } from "@/components/landing/PerformancePreview";
-import { CopyTradingTeaser } from "@/components/landing/CopyTradingTeaser";
-import { Architecture } from "@/components/landing/Architecture";
-import { Footer } from "@/components/landing/Footer";
 
-function useLandingStats() {
+export function ArenaProvider({ children }: { children: React.ReactNode }) {
+  usePrices();
+  useAgentPositions();
+  useHistoricalStats();
+
+  return <>{children}</>;
+}
+
+function useHistoricalStats() {
   const hasFetched = useRef(false);
 
   useEffect(() => {
@@ -24,6 +25,7 @@ function useLandingStats() {
         const res = await fetch("/api/stats");
         if (!res.ok) return;
         const data = await res.json();
+
         if (data.agents) {
           const store = useAgentStore.getState();
           for (const [agentId, stats] of Object.entries(data.agents)) {
@@ -44,22 +46,4 @@ function useLandingStats() {
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
-}
-
-export default function Home() {
-  usePrices();
-  useLandingStats();
-
-  return (
-    <div className="min-h-screen">
-      <Hero />
-      <LiveStats />
-      <AgentShowcase />
-      <HowItWorks />
-      <PerformancePreview />
-      <CopyTradingTeaser />
-      <Architecture />
-      <Footer />
-    </div>
-  );
 }

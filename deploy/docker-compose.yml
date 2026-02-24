@@ -10,8 +10,10 @@ services:
     env_file: ../.env
     environment:
       - REPORTS_DIR=/app/reports
+      - REASONING_DIR=/app/reasoning
     volumes:
       - ../reports:/app/reports:ro
+      - /tmp/perpsclaw:/app/reasoning:ro
     restart: unless-stopped
     deploy:
       resources:
