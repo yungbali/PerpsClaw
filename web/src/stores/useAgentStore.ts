@@ -1,5 +1,12 @@
 import { create } from "zustand";
-import { AgentPosition } from "@/lib/drift/positions";
+
+export interface AgentPosition {
+  baseSize: number;
+  entryPrice: number;
+  unrealizedPnl: number;
+  liquidationPrice: number;
+  leverage: number;
+}
 
 export interface AgentStats {
   position: AgentPosition | null;

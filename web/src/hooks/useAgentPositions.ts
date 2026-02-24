@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import { AGENTS } from "@/config/agents";
-import { useAgentStore } from "@/stores/useAgentStore";
+import { useAgentStore, AgentPosition } from "@/stores/useAgentStore";
 import { useTradeLogStore } from "@/stores/useTradeLogStore";
 import { usePriceStore } from "@/stores/usePriceStore";
 import { getReadOnlyDriftClient } from "@/lib/drift/client";
-import { fetchAgentPosition, AgentPosition } from "@/lib/drift/positions";
+import { fetchAgentPosition } from "@/lib/drift/positions";
 
 const POLL_INTERVAL = 5000;
 
