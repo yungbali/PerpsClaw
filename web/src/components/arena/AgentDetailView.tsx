@@ -54,8 +54,8 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
 
       <div className="relative z-10 flex flex-col h-full">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 bg-surface/80 backdrop-blur-sm border-b border-border">
-          <div className="flex items-center gap-4">
+        <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 md:px-6 py-3 md:py-4 bg-surface/80 backdrop-blur-sm border-b border-border gap-3 sm:gap-0">
+          <div className="flex items-center gap-3 md:gap-4">
             <Link
               href="/arena"
               className="flex items-center gap-1.5 text-muted hover:text-foreground transition-colors text-xs"
@@ -69,10 +69,10 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
             <div className="flex items-center gap-3">
               <div className="relative">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center"
                   style={{ backgroundColor: `${agent.color}15` }}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: agent.color }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ color: agent.color }} className="md:w-5 md:h-5">
                     <path d={AGENT_ICONS[agent.id]} fill="currentColor" fillOpacity="0.9" />
                   </svg>
                 </div>
@@ -82,7 +82,7 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
                 />
               </div>
               <div>
-                <h1 className="font-display text-lg font-800 text-foreground leading-none">
+                <h1 className="font-display text-base md:text-lg font-800 text-foreground leading-none">
                   {agent.name}
                 </h1>
                 <p className="text-[10px] text-muted mt-1 uppercase tracking-wider">{agent.strategy}</p>
@@ -90,9 +90,9 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-2/50">
-              <span className="text-2xs text-muted-2 uppercase tracking-wider">Market</span>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-lg bg-surface-2/50">
+              <span className="text-2xs text-muted-2 uppercase tracking-wider hidden sm:inline">Market</span>
               <span className="text-xs font-semibold text-foreground">{market.symbol}</span>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan/10 text-cyan font-medium">DRIFT</span>
             </div>
@@ -112,7 +112,7 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
         </header>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-6 py-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4">
           <StatCard
             label="Unrealized PnL"
             value={`${pnl >= 0 ? "+" : ""}$${pnl.toFixed(2)}`}
@@ -164,7 +164,7 @@ export function AgentDetailView({ agent }: { agent: AgentInfo }) {
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center border-b border-border px-6">
+        <div className="flex items-center border-b border-border px-4 md:px-6">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -207,13 +207,13 @@ function StatCard({
   accent: string;
 }) {
   return (
-    <div className="relative bg-surface border border-border rounded-lg p-4 overflow-hidden">
+    <div className="relative bg-surface border border-border rounded-lg p-3 md:p-4 overflow-hidden">
       <div
         className="absolute top-0 left-0 right-0 h-px"
         style={{ background: `linear-gradient(90deg, ${accent}40, transparent)` }}
       />
-      <p className="text-[10px] text-muted-2 uppercase tracking-wider mb-1.5">{label}</p>
-      <p className={cn("font-display text-base font-700 tabular-nums", color)}>{value}</p>
+      <p className="text-[9px] md:text-[10px] text-muted-2 uppercase tracking-wider mb-1">{label}</p>
+      <p className={cn("font-display text-sm md:text-base font-700 tabular-nums truncate", color)}>{value}</p>
     </div>
   );
 }

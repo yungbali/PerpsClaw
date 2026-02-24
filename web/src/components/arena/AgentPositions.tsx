@@ -28,7 +28,8 @@ export function AgentPositions() {
 
   return (
     <div className="h-full overflow-auto">
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[500px]">
         <thead>
           <tr className="text-[9px] text-muted-2 uppercase tracking-wider">
             <th className="text-left pl-5 pr-2 py-2.5 font-medium">Agent</th>
@@ -95,6 +96,7 @@ export function AgentPositions() {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

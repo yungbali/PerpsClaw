@@ -22,7 +22,8 @@ export function AgentTradeHistory({ agentId, agentColor }: Props) {
 
   return (
     <div className="overflow-auto">
-      <table className="w-full">
+      <div className="overflow-x-auto">
+      <table className="w-full min-w-[500px]">
         <thead>
           <tr className="border-b border-border text-[10px] text-muted-2 uppercase tracking-wider">
             <th className="text-left px-6 py-3 font-medium">Time</th>
@@ -87,6 +88,7 @@ export function AgentTradeHistory({ agentId, agentColor }: Props) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

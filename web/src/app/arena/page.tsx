@@ -1,11 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { TopBar } from "@/components/arena/TopBar";
 import { AgentGrid } from "@/components/arena/AgentGrid";
 import { TradingChart } from "@/components/charts/TradingChart";
 import { BottomPanel } from "@/components/arena/BottomPanel";
 
 export default function ArenaPage() {
+  const [showAgents, setShowAgents] = useState(false);
+
   return (
     <div className="flex flex-col h-screen bg-background relative overflow-hidden">
       {/* Ambient background effects */}
@@ -17,18 +20,24 @@ export default function ArenaPage() {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col h-full">
-        <TopBar />
+        <TopBar onToggleAgents={() => setShowAgents((v) => !v)} showAgents={showAgents} />
 
         {/* Main arena */}
-        <div className="flex-1 flex gap-2 p-2 min-h-0">
-          {/* Left sidebar: Agent cards */}
-          <aside className="w-[280px] flex-shrink-0 overflow-y-auto scrollbar-none">
-            <AgentGrid />
+        <div className="flex-1 flex flex-col md:flex-row gap-2 p-2 min-h-0">
+          {/* Left sidebar: Agent cards -- hidden on mobile, toggled via button */}
+          <aside
+            className={`${
+              showAgents ? "flex" : "hidden"
+            } md:flex w-full md:w-[280px] flex-shrink-0 overflow-y-auto scrollbar-none max-h-[40vh] md:max-h-none`}
+          >
+            <div className="w-full">
+              <AgentGrid />
+            </div>
           </aside>
 
           {/* Center: Chart + Bottom panel */}
-          <main className="flex-1 flex flex-col gap-2 min-w-0">
-            <div className="flex-1 min-h-0">
+          <main className="flex-1 flex flex-col gap-2 min-w-0 min-h-0">
+            <div className="flex-1 min-h-0 min-h-[200px]">
               <TradingChart />
             </div>
             <BottomPanel />

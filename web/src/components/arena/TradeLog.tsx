@@ -38,7 +38,7 @@ export function TradeLog() {
         return (
           <div
             key={entry.id}
-            className="trade-entry flex items-center gap-3 px-5 py-2.5 border-b border-border/30 last:border-0 hover:bg-surface-2/30 transition-colors"
+            className="trade-entry flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-2.5 border-b border-border/30 last:border-0 hover:bg-surface-2/30 transition-colors min-w-0"
           >
             {/* Agent dot */}
             <div
@@ -69,12 +69,12 @@ export function TradeLog() {
             </span>
 
             {/* Size & price */}
-            <span className="text-[10px] text-foreground-2 tabular-nums flex-shrink-0">
+            <span className="text-[10px] text-foreground-2 tabular-nums flex-shrink-0 hidden sm:inline">
               {entry.size.toFixed(4)} <span className="text-muted-2">@</span> ${entry.price.toFixed(2)}
             </span>
 
             {/* Reason */}
-            <span className="text-[10px] text-muted-2 truncate flex-1 text-right italic">
+            <span className="text-[10px] text-muted-2 truncate flex-1 text-right italic min-w-0">
               {entry.reason}
             </span>
 
