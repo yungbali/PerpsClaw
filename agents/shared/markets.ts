@@ -8,7 +8,6 @@ export interface PerpMarket {
   marketIndex: number;
   pythFeedId: string;
   decimals: number;
-  color: string;
 }
 
 export const PERP_MARKETS: PerpMarket[] = [
@@ -19,7 +18,6 @@ export const PERP_MARKETS: PerpMarket[] = [
     marketIndex: 0,
     pythFeedId: "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d",
     decimals: 9,
-    color: "#9945ff",
   },
   {
     id: "btc",
@@ -28,7 +26,6 @@ export const PERP_MARKETS: PerpMarket[] = [
     marketIndex: 1,
     pythFeedId: "0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43",
     decimals: 8,
-    color: "#f7931a",
   },
   {
     id: "eth",
@@ -37,7 +34,6 @@ export const PERP_MARKETS: PerpMarket[] = [
     marketIndex: 2,
     pythFeedId: "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace",
     decimals: 18,
-    color: "#627eea",
   },
 ];
 
@@ -53,4 +49,5 @@ export function getMarketByIndex(index: number): PerpMarket | undefined {
 
 // Legacy exports for backwards compatibility
 export const SOL_PERP_MARKET_INDEX = 0;
-export const SOL_PYTH_FEED_ID = PERP_MARKETS[0].pythFeedId;
+export const BTC_PERP_MARKET_INDEX = 1;
+export const ETH_PERP_MARKET_INDEX = 2;

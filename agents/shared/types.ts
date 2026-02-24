@@ -40,7 +40,9 @@ export interface AgentConfig {
   stopLossPct: number;
   /** Take profit percentage (0-1) - used as fallback, ATR-based preferred */
   takeProfitPct: number;
-  /** Drift market index for SOL-PERP */
+  /** Market ID to trade (sol, btc, eth) - defaults to sol */
+  marketId?: string;
+  /** Drift market index (legacy, use marketId instead) */
   marketIndex: number;
   /** ATR multiplier for stop loss (default 2.0) */
   atrStopMultiplier?: number;

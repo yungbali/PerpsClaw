@@ -7,7 +7,8 @@ export const gridConfig: AgentConfig = {
   maxLeverage: 2,
   stopLossPct: 0.10, // Fallback if ATR unavailable (10%)
   takeProfitPct: 0.18, // Fallback if ATR unavailable (18%)
-  marketIndex: 0, // SOL-PERP
+  marketId: "btc", // Trade BTC-PERP
+  marketIndex: 1, // BTC-PERP index (legacy)
 
   // Enhanced: ATR-based risk management (wider for grid to capture swings)
   // NOTE: ATR is underestimated (close-only data), so we use wider multipliers

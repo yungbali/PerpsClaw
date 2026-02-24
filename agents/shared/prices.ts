@@ -1,15 +1,15 @@
 import { logger } from "./logger.js";
 import type { OHLCCandle } from "./types.js";
+import { PERP_MARKETS, PerpMarket } from "./markets.js";
 
 const PYTH_HERMES_URL =
   process.env.PYTH_HERMES_URL || "https://hermes.pyth.network";
 
-// SOL/USD Pyth feed ID
-const SOL_FEED_ID =
-  "0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
-
-export async function fetchSolPrice(): Promise<number> {
-  const url = `${PYTH_HERMES_URL}/v2/updates/price/latest?ids[]=${SOL_FEED_ID}`;
+/**
+ * Fetch price for any supported market from Pyth Oracle.
+ */
+export async function fetchPrice(feedId: string): Promise<number> {
+  const url = `${PYTH_HERMES_URL}/v2/updates/price/latest?ids[]=${feedId}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Pyth fetch failed: ${res.status}`);
 
@@ -17,10 +17,38 @@ export async function fetchSolPrice(): Promise<number> {
   const parsed = data.parsed?.[0];
   if (!parsed?.price) throw new Error("No price data from Pyth");
 
-  const price =
-    Number(parsed.price.price) * Math.pow(10, parsed.price.expo);
-
+  const price = Number(parsed.price.price) * Math.pow(10, parsed.price.expo);
   return price;
+}
+
+/**
+ * Fetch price for a market by its ID (sol, btc, eth).
+ */
+export async function fetchMarketPrice(marketId: string): Promise<number> {
+  const market = PERP_MARKETS.find((m) => m.id === marketId);
+  if (!market) throw new Error(`Unknown market: ${marketId}`);
+  return fetchPrice(market.pythFeedId);
+}
+
+/**
+ * Fetch SOL price (legacy, for backwards compatibility).
+ */
+export async function fetchSolPrice(): Promise<number> {
+  return fetchMarketPrice("sol");
+}
+
+/**
+ * Fetch BTC price.
+ */
+export async function fetchBtcPrice(): Promise<number> {
+  return fetchMarketPrice("btc");
+}
+
+/**
+ * Fetch ETH price.
+ */
+export async function fetchEthPrice(): Promise<number> {
+  return fetchMarketPrice("eth");
 }
 
 /**

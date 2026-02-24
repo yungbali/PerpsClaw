@@ -8,26 +8,30 @@ import {
   PRICE_PRECISION,
 } from "@drift-labs/sdk";
 import { AgentConfig, Strategy, StrategyContext } from "./types.js";
-import { fetchSolPrice, PriceBuffer, OHLCBuffer } from "./prices.js";
+import { fetchMarketPrice, PriceBuffer, OHLCBuffer } from "./prices.js";
+import { getMarket, PERP_MARKETS } from "./markets.js";
 import { applyRiskChecks } from "./risk.js";
 import { atrOHLC, atrPercentOHLC, hurstExponent, classifyRegime } from "./indicators.js";
 import { logReasoning, ReasoningEntry } from "./reasoning.js";
 import { logger } from "./logger.js";
-import { SOL_PERP_MARKET_INDEX } from "./drift-client.js";
+// Market index is now determined from config.marketId
 import { sendTradeNotification, getAgentEmoji } from "./webhook.js";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function getPositionInfo(driftClient: DriftClient): {
+function getPositionInfo(
+  driftClient: DriftClient,
+  marketIndex: number
+): {
   positionSize: number;
   entryPrice: number;
   unrealizedPnl: number;
 } {
   try {
     const user = driftClient.getUser();
-    const position = user.getPerpPosition(SOL_PERP_MARKET_INDEX);
+    const position = user.getPerpPosition(marketIndex);
     if (!position) {
       return { positionSize: 0, entryPrice: 0, unrealizedPnl: 0 };
     }
@@ -51,12 +55,14 @@ function getPositionInfo(driftClient: DriftClient): {
 async function executeTrade(
   driftClient: DriftClient,
   direction: "long" | "short" | "close",
-  size: number
+  size: number,
+  marketIndex: number,
+  symbol: string
 ) {
   const user = driftClient.getUser();
 
   if (direction === "close") {
-    const position = user.getPerpPosition(SOL_PERP_MARKET_INDEX);
+    const position = user.getPerpPosition(marketIndex);
     if (!position || position.baseAssetAmount.isZero()) {
       logger.info("No position to close");
       return;
@@ -76,14 +82,14 @@ async function executeTrade(
       await driftClient.openPosition(
         closeDirection,
         baseAmount,
-        SOL_PERP_MARKET_INDEX
+        marketIndex
       );
-      logger.info(`Partial close ${size.toFixed(4)} SOL-PERP`);
+      logger.info(`Partial close ${size.toFixed(4)} ${symbol}`);
       return;
     }
 
     // Full close
-    await driftClient.closePosition(SOL_PERP_MARKET_INDEX);
+    await driftClient.closePosition(marketIndex);
     logger.info("Position fully closed");
     return;
   }
@@ -95,10 +101,10 @@ async function executeTrade(
   await driftClient.openPosition(
     perpDirection,
     baseAmount,
-    SOL_PERP_MARKET_INDEX
+    marketIndex
   );
 
-  logger.info(`Opened ${direction} ${size.toFixed(4)} SOL-PERP`);
+  logger.info(`Opened ${direction} ${size.toFixed(4)} ${symbol}`);
 }
 
 // Daily loss tracking
@@ -141,9 +147,16 @@ export async function runAgentLoop(
     running = false;
   });
 
+  // Determine market to trade
+  const marketId = config.marketId || "sol";
+  const market = getMarket(marketId);
+  if (!market) {
+    throw new Error(`Unknown market: ${marketId}`);
+  }
+
   logger.info(`Starting ${config.name} agent loop (${strategy.name})`);
   logger.info(
-    `Budget: ${config.budget} SOL | Leverage: ${config.maxLeverage}x | Interval: ${config.loopIntervalMs}ms`
+    `Market: ${market.symbol} | Budget: $${config.budget} | Leverage: ${config.maxLeverage}x | Interval: ${config.loopIntervalMs}ms`
   );
   logger.info(
     `Cooldown: ${TRADE_COOLDOWN_MS}ms | Daily loss limit: $${Math.abs(DAILY_LOSS_LIMIT).toFixed(2)}`
@@ -171,7 +184,7 @@ export async function runAgentLoop(
       }
 
       // 1. Fetch price and update buffers
-      const price = await fetchSolPrice();
+      const price = await fetchMarketPrice(marketId);
       const timestamp = Date.now();
       priceBuffer.push(price);
       ohlcBuffer.push(price, timestamp); // Build OHLC candles from samples
@@ -179,7 +192,7 @@ export async function runAgentLoop(
 
       // 2. Get current position
       const { positionSize, entryPrice, unrealizedPnl } =
-        getPositionInfo(driftClient);
+        getPositionInfo(driftClient, market.marketIndex);
 
       // Track peak PnL for drawdown detection
       if (unrealizedPnl > daily.peakPnl) {
@@ -270,7 +283,7 @@ export async function runAgentLoop(
           logger.info(`Trade cooldown active, skipping ${signal.direction}`);
         } else {
           const prevPnl = unrealizedPnl;
-          await executeTrade(driftClient, signal.direction, signal.size);
+          await executeTrade(driftClient, signal.direction, signal.size, market.marketIndex, market.symbol);
           lastTradeTime = now;
 
           // If we closed a position, record realized PnL

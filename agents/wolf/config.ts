@@ -7,7 +7,8 @@ export const wolfConfig: AgentConfig = {
   maxLeverage: 3,
   stopLossPct: 0.05, // Fallback if ATR unavailable (5%)
   takeProfitPct: 0.08, // Fallback if ATR unavailable (8%)
-  marketIndex: 0, // SOL-PERP
+  marketId: "eth", // Trade ETH-PERP
+  marketIndex: 2, // ETH-PERP index (legacy)
 
   // Enhanced: ATR-based risk management
   // NOTE: ATR is underestimated (close-only data), so we use wider multipliers
