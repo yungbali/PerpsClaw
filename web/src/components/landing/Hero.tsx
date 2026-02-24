@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePriceStore } from "@/stores/usePriceStore";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp, BarChart3 } from "lucide-react";
 
 export function Hero() {
   const priceData = usePriceStore((state) => state.price);
@@ -105,14 +105,14 @@ export function Hero() {
             </button>
           </Link>
 
-          <button
-            onClick={() => {
-              document.getElementById("performance")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="px-8 py-4 rounded-xl border-2 border-[var(--border-2)] font-['Syne'] font-semibold text-lg text-[var(--foreground)] hover:border-[var(--muted-2)] hover:bg-[var(--surface)]/50 transition-all duration-300"
-          >
-            View Performance ↓
-          </button>
+          <Link href="/reports">
+            <button className="group px-8 py-4 rounded-xl border-2 border-[var(--border-2)] font-['Syne'] font-semibold text-lg text-[var(--foreground)] hover:border-[var(--muted-2)] hover:bg-[var(--surface)]/50 transition-all duration-300">
+              <span className="flex items-center gap-2">
+                <BarChart3 className="w-5 h-5 text-[var(--cyan)]" />
+                Agent Reports
+              </span>
+            </button>
+          </Link>
         </motion.div>
 
         {/* Scroll indicator */}
