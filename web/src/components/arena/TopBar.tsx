@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePriceStore } from "@/stores/usePriceStore";
 import { useAgentStore, selectTotalPnl, selectActiveCount } from "@/stores/useAgentStore";
@@ -13,7 +14,7 @@ export function TopBar() {
     <header className="relative flex items-center justify-between px-5 py-3 bg-surface/80 backdrop-blur-sm border-b border-border z-50">
       {/* Left: Brand */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2.5">
+        <Link href="/" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
           {/* Claw icon */}
           <div className="relative w-7 h-7 flex items-center justify-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-cyan">
@@ -25,7 +26,7 @@ export function TopBar() {
           <h1 className="font-display text-base font-800 tracking-tight text-foreground">
             PERPS<span className="text-cyan">CLAW</span>
           </h1>
-        </div>
+        </Link>
 
         <div className="w-px h-4 bg-border-2" />
 

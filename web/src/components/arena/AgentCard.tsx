@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AgentInfo } from "@/config/agents";
 import { useAgentStore, AgentStats } from "@/stores/useAgentStore";
@@ -24,8 +25,9 @@ export function AgentCard({ agent, rank }: AgentCardProps) {
   const hasPosition = isLong || isShort;
 
   return (
-    <div
-      className="relative group rounded-lg overflow-hidden fade-up"
+    <Link
+      href={`/arena/${agent.id}`}
+      className="relative group rounded-lg overflow-hidden fade-up block cursor-pointer"
       style={{ animationDelay: `${rank * 80}ms` }}
     >
       {/* Shimmer top line */}
@@ -145,6 +147,6 @@ export function AgentCard({ agent, rank }: AgentCardProps) {
           </div>
         )}
       </div>
-    </div>
+    </Link>
   );
 }
