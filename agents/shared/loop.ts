@@ -10,7 +10,8 @@ import {
 import { AgentConfig, Strategy, StrategyContext } from "./types.js";
 import { fetchSolPrice, PriceBuffer, OHLCBuffer } from "./prices.js";
 import { applyRiskChecks } from "./risk.js";
-import { atrOHLC, atrPercentOHLC } from "./indicators.js";
+import { atrOHLC, atrPercentOHLC, hurstExponent, classifyRegime } from "./indicators.js";
+import { logReasoning, ReasoningEntry } from "./reasoning.js";
 import { logger } from "./logger.js";
 import { SOL_PERP_MARKET_INDEX } from "./drift-client.js";
 import { sendTradeNotification, getAgentEmoji } from "./webhook.js";
@@ -217,11 +218,39 @@ export async function runAgentLoop(
         atrPercent: atrPct,
       };
 
-      // 4. Evaluate strategy
+      // 4. Calculate regime for reasoning display
+      const hurst = priceBuffer.length >= 50 ? hurstExponent(priceBuffer.prices) : 0.5;
+      const regime = classifyRegime(hurst);
+
+      // 5. Evaluate strategy
       const rawSignal = strategy.evaluate(ctx);
 
-      // 5. Apply risk checks
+      // 6. Apply risk checks
       const signal = applyRiskChecks(rawSignal, ctx, config);
+
+      // 7. Log reasoning for UI display
+      const riskChecks: string[] = [];
+      if (signal.reason !== rawSignal.reason) riskChecks.push("Risk adjusted");
+      if (signal.size < rawSignal.size) riskChecks.push("Size reduced");
+      if (daily.realizedPnl < DAILY_LOSS_LIMIT * 0.5) riskChecks.push("Near loss limit");
+
+      const reasoningEntry: ReasoningEntry = {
+        timestamp: timestamp,
+        agentName: config.name,
+        price,
+        regime,
+        hurst,
+        atr: atrValue ?? 0,
+        atrPercent: atrPct ?? 0,
+        positionSize,
+        entryPrice,
+        unrealizedPnl,
+        signal: signal.direction,
+        confidence: signal.confidence,
+        reason: signal.reason,
+        riskChecks,
+      };
+      logReasoning(reasoningEntry);
 
       logger.info(`Tick`, {
         price: price.toFixed(2),

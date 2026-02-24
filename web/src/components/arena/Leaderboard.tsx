@@ -29,8 +29,7 @@ export function Leaderboard() {
             <th className="text-left px-2 py-2.5 font-medium">Strategy</th>
             <th className="text-right px-2 py-2.5 font-medium">PnL</th>
             <th className="text-right px-2 py-2.5 font-medium">Trades</th>
-            <th className="text-right px-2 py-2.5 font-medium">Win Rate</th>
-            <th className="text-center pr-5 pl-2 py-2.5 font-medium">Status</th>
+            <th className="text-right pr-5 px-2 py-2.5 font-medium">Win Rate</th>
           </tr>
         </thead>
         <tbody>
@@ -71,21 +70,10 @@ export function Leaderboard() {
               <td className="px-2 py-3 text-right">
                 <span className="text-xs text-foreground-2 tabular-nums">{agent.trades}</span>
               </td>
-              <td className="px-2 py-3 text-right">
+              <td className="pr-5 px-2 py-3 text-right">
                 <span className="text-xs text-foreground-2 tabular-nums">
                   {agent.winRate > 0 ? `${agent.winRate.toFixed(0)}%` : "—"}
                 </span>
-              </td>
-              <td className="pr-5 pl-2 py-3 text-center">
-                <div className="inline-flex items-center gap-1.5">
-                  <div
-                    className={cn("w-1.5 h-1.5 rounded-full", agent.isActive ? "breathe" : "")}
-                    style={{ backgroundColor: agent.isActive ? agent.color : "#3a4a5c" }}
-                  />
-                  <span className="text-[9px] text-muted-2 uppercase tracking-wider">
-                    {agent.isActive ? "Live" : "Idle"}
-                  </span>
-                </div>
               </td>
             </tr>
           ))}

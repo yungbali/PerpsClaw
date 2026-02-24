@@ -40,3 +40,16 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     });
   },
 }));
+
+// Selectors
+export const selectTotalPnl = (state: AgentState): number => {
+  const agents = state.agents;
+  return Object.values(agents).reduce((sum, a) => {
+    const unrealized = a.position?.unrealizedPnl ?? 0;
+    return sum + unrealized;
+  }, 0);
+};
+
+export const selectActiveCount = (state: AgentState): number => {
+  return Object.values(state.agents).filter((a) => a.isActive).length;
+};

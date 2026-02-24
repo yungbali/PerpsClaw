@@ -5,8 +5,10 @@ import { cn } from "@/lib/utils";
 import { Leaderboard } from "./Leaderboard";
 import { AgentPositions } from "./AgentPositions";
 import { TradeLog } from "./TradeLog";
+import { ReasoningLog } from "./ReasoningLog";
 
 const tabs = [
+  { id: "reasoning", label: "Agent Thinking" },
   { id: "leaderboard", label: "Leaderboard" },
   { id: "positions", label: "Positions" },
   { id: "trades", label: "Trade Log" },
@@ -15,7 +17,7 @@ const tabs = [
 type TabId = (typeof tabs)[number]["id"];
 
 export function BottomPanel() {
-  const [activeTab, setActiveTab] = useState<TabId>("leaderboard");
+  const [activeTab, setActiveTab] = useState<TabId>("reasoning");
 
   return (
     <div className="bg-surface rounded-lg border border-border overflow-hidden fade-up" style={{ animationDelay: "200ms" }}>
@@ -48,6 +50,7 @@ export function BottomPanel() {
 
       {/* Tab content */}
       <div className="h-[200px] overflow-hidden">
+        {activeTab === "reasoning" && <ReasoningLog />}
         {activeTab === "leaderboard" && <Leaderboard />}
         {activeTab === "positions" && <AgentPositions />}
         {activeTab === "trades" && <TradeLog />}

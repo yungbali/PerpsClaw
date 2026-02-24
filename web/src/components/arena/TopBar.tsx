@@ -2,9 +2,12 @@
 
 import { cn } from "@/lib/utils";
 import { usePriceStore } from "@/stores/usePriceStore";
+import { useAgentStore, selectTotalPnl, selectActiveCount } from "@/stores/useAgentStore";
 
 export function TopBar() {
   const price = usePriceStore((s) => s.price);
+  const totalPnl = useAgentStore(selectTotalPnl);
+  const activeCount = useAgentStore(selectActiveCount);
 
   return (
     <header className="relative flex items-center justify-between px-5 py-3 bg-surface/80 backdrop-blur-sm border-b border-border z-50">
@@ -60,10 +63,25 @@ export function TopBar() {
 
       {/* Right: Status */}
       <div className="flex items-center gap-5">
+        {/* Total PnL */}
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-2/50">
+          <span className="text-2xs text-muted-2 uppercase tracking-wider">Total PnL</span>
+          <span
+            className={cn(
+              "font-display text-sm font-700 tabular-nums",
+              totalPnl > 0 ? "text-green" : totalPnl < 0 ? "text-red" : "text-muted"
+            )}
+          >
+            {totalPnl >= 0 ? "+" : ""}${totalPnl.toFixed(2)}
+          </span>
+        </div>
+
+        <div className="w-px h-4 bg-border-2" />
+
         <div className="flex items-center gap-4 text-2xs text-muted">
           <div className="flex items-center gap-1.5">
-            <span className="text-muted-2 uppercase tracking-wider">Agents</span>
-            <span className="text-foreground font-semibold">3</span>
+            <span className="text-muted-2 uppercase tracking-wider">Active</span>
+            <span className="text-foreground font-semibold">{activeCount}/3</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-muted-2 uppercase tracking-wider">Market</span>
@@ -73,10 +91,12 @@ export function TopBar() {
 
         <div className="flex items-center gap-2 pl-4 border-l border-border-2">
           <div className="relative w-2 h-2">
-            <div className="absolute inset-0 rounded-full bg-green breathe" />
-            <div className="pulse-ring text-green" />
+            <div className={cn("absolute inset-0 rounded-full", activeCount > 0 ? "bg-green breathe" : "bg-muted")} />
+            {activeCount > 0 && <div className="pulse-ring text-green" />}
           </div>
-          <span className="text-2xs font-medium text-green/80 uppercase tracking-widest">Live</span>
+          <span className={cn("text-2xs font-medium uppercase tracking-widest", activeCount > 0 ? "text-green/80" : "text-muted")}>
+            {activeCount > 0 ? "Live" : "Idle"}
+          </span>
         </div>
       </div>
 
