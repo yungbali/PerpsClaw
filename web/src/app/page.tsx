@@ -1,6 +1,7 @@
 "use client";
 
 import { usePrices } from "@/hooks/usePrices";
+import { useHistoricalStats } from "@/hooks/useHistoricalStats";
 import { Hero } from "@/components/landing/Hero";
 import { LiveStats } from "@/components/landing/LiveStats";
 import { AgentShowcase } from "@/components/landing/AgentShowcase";
@@ -11,8 +12,8 @@ import { Architecture } from "@/components/landing/Architecture";
 import { Footer } from "@/components/landing/Footer";
 
 export default function Home() {
-  // Initialize price data WebSocket connection
   usePrices();
+  useHistoricalStats();
 
   return (
     <div className="min-h-screen">

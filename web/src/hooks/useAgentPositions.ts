@@ -72,7 +72,6 @@ export function useAgentPositions() {
             position,
             lastUpdate: Date.now(),
             isActive: position !== null,
-            cumulativePnl: position?.unrealizedPnl ?? 0,
           });
         }
       } catch (err) {

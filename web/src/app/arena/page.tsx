@@ -1,25 +1,17 @@
 "use client";
 
-import { usePrices } from "@/hooks/usePrices";
-import { useAgentPositions } from "@/hooks/useAgentPositions";
 import { TopBar } from "@/components/arena/TopBar";
 import { AgentGrid } from "@/components/arena/AgentGrid";
 import { TradingChart } from "@/components/charts/TradingChart";
 import { BottomPanel } from "@/components/arena/BottomPanel";
 
 export default function ArenaPage() {
-  usePrices();
-  useAgentPositions();
-
   return (
     <div className="flex flex-col h-screen bg-background relative overflow-hidden">
       {/* Ambient background effects */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        {/* Top-left warm glow (shark) */}
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-shark/[0.03] rounded-full blur-[100px]" />
-        {/* Top-right cool glow (wolf) */}
         <div className="absolute -top-32 -right-32 w-96 h-96 bg-wolf/[0.03] rounded-full blur-[100px]" />
-        {/* Bottom center (grid) */}
         <div className="absolute -bottom-32 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-grid/[0.02] rounded-full blur-[100px]" />
       </div>
 
@@ -36,12 +28,9 @@ export default function ArenaPage() {
 
           {/* Center: Chart + Bottom panel */}
           <main className="flex-1 flex flex-col gap-2 min-w-0">
-            {/* Chart takes the majority */}
             <div className="flex-1 min-h-0">
               <TradingChart />
             </div>
-
-            {/* Bottom tabbed panel */}
             <BottomPanel />
           </main>
         </div>
