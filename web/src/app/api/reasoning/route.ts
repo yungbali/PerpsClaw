@@ -19,7 +19,6 @@ interface ReasoningEntry {
   riskChecks: string[];
 }
 
-const REASONING_DIR = process.env.REASONING_DIR || "/tmp/perpsclaw";
 const REASONING_FILE = "reasoning.jsonl";
 
 export async function GET(request: Request) {
@@ -28,7 +27,8 @@ export async function GET(request: Request) {
     const agent = searchParams.get("agent");
     const limit = parseInt(searchParams.get("limit") || "50", 10);
 
-    const filePath = join(REASONING_DIR, REASONING_FILE);
+    const reasoningDir = process.env.REASONING_DIR || "/tmp/perpsclaw";
+    const filePath = join(reasoningDir, REASONING_FILE);
 
     if (!existsSync(filePath)) {
       return NextResponse.json({ entries: [] });

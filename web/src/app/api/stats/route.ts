@@ -29,7 +29,6 @@ interface AgentHistoricalStats {
   worstPnl: number;
 }
 
-const REASONING_DIR = process.env.REASONING_DIR || "/tmp/perpsclaw";
 const REASONING_FILE = "reasoning.jsonl";
 
 function computeStats(entries: ReasoningEntry[]): Record<string, AgentHistoricalStats> {
@@ -96,9 +95,12 @@ function computeStats(entries: ReasoningEntry[]): Record<string, AgentHistorical
   return result;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
-    const filePath = join(REASONING_DIR, REASONING_FILE);
+    const reasoningDir = process.env.REASONING_DIR || "/tmp/perpsclaw";
+    const filePath = join(reasoningDir, REASONING_FILE);
 
     if (!existsSync(filePath)) {
       return NextResponse.json({ agents: {}, totalEntries: 0 });
