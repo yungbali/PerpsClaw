@@ -5,6 +5,13 @@ services:
     build:
       context: ..
       dockerfile: deploy/Dockerfile.web
+      args:
+        NEXT_PUBLIC_SOLANA_RPC_URL: ${NEXT_PUBLIC_SOLANA_RPC_URL:-https://api.devnet.solana.com}
+        NEXT_PUBLIC_NETWORK: ${NEXT_PUBLIC_NETWORK:-devnet}
+        NEXT_PUBLIC_PYTH_HERMES_URL: ${NEXT_PUBLIC_PYTH_HERMES_URL:-https://hermes.pyth.network}
+        NEXT_PUBLIC_SHARK_WALLET: ${NEXT_PUBLIC_SHARK_WALLET}
+        NEXT_PUBLIC_WOLF_WALLET: ${NEXT_PUBLIC_WOLF_WALLET}
+        NEXT_PUBLIC_GRID_WALLET: ${NEXT_PUBLIC_GRID_WALLET}
     ports:
       - "3000:3000"
     env_file: ../.env
