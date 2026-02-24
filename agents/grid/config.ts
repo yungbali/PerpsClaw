@@ -5,13 +5,14 @@ export const gridConfig: AgentConfig = {
   budget: 100,
   loopIntervalMs: 15_000,
   maxLeverage: 2,
-  stopLossPct: 0.08, // Fallback if ATR unavailable
-  takeProfitPct: 0.15, // Fallback if ATR unavailable
+  stopLossPct: 0.10, // Fallback if ATR unavailable (10%)
+  takeProfitPct: 0.18, // Fallback if ATR unavailable (18%)
   marketIndex: 0, // SOL-PERP
 
   // Enhanced: ATR-based risk management (wider for grid to capture swings)
-  atrStopMultiplier: 2.5, // Wider stop to allow grid to work
-  atrTakeProfitMultiplier: 4.0, // Larger TP target
+  // NOTE: ATR is underestimated (close-only data), so we use wider multipliers
+  atrStopMultiplier: 5.0, // Much wider stop to allow grid to work + ATR correction
+  atrTakeProfitMultiplier: 8.0, // Larger TP target for grid swings
 
   // Enhanced: Adaptive parameters
   useAdaptiveParams: true, // ATR-based grid spacing

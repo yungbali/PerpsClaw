@@ -22,14 +22,15 @@ interface TrailingStopState {
 const trailingStops: Map<string, TrailingStopState> = new Map();
 
 /**
- * Initialize or update trailing stop for an agent
+ * Initialize or update trailing stop for an agent.
+ * Uses same minimum stop floor as ATR stops for consistency.
  */
 export function updateTrailingStop(
   agentName: string,
   currentPrice: number,
   positionSize: number,
   atrValue: number,
-  multiplier: number = 1.5
+  multiplier: number = 3.0 // Increased from 1.5 to match wider stops
 ): TrailingStopState {
   let state = trailingStops.get(agentName);
 
@@ -43,17 +44,22 @@ export function updateTrailingStop(
     };
   }
 
+  // Calculate trailing distance with minimum floor
+  const atrDistance = atrValue * multiplier;
+  const minDistance = currentPrice * MIN_STOP_PERCENT;
+  const trailDistance = Math.max(atrDistance, minDistance);
+
   if (positionSize > 0) {
     // Long position: track high water mark
     if (currentPrice > state.highWaterMark) {
       state.highWaterMark = currentPrice;
-      state.trailingStopPrice = currentPrice - atrValue * multiplier;
+      state.trailingStopPrice = currentPrice - trailDistance;
     }
   } else if (positionSize < 0) {
     // Short position: track low water mark
     if (currentPrice < state.lowWaterMark) {
       state.lowWaterMark = currentPrice;
-      state.trailingStopPrice = currentPrice + atrValue * multiplier;
+      state.trailingStopPrice = currentPrice + trailDistance;
     }
   }
 
@@ -96,7 +102,14 @@ export function resetTrailingStop(agentName: string): void {
 // ============================================================================
 
 /**
- * Calculate ATR-based stop loss price
+ * Minimum stop distance as percentage of entry price.
+ * This protects against underestimated ATR (close-only data lacks high/low wicks).
+ * 3% minimum ensures stops aren't triggered by normal market noise.
+ */
+const MIN_STOP_PERCENT = 0.03;
+
+/**
+ * Calculate ATR-based stop loss price with minimum floor protection
  */
 export function calculateAtrStopPrice(
   entryPrice: number,
@@ -104,7 +117,11 @@ export function calculateAtrStopPrice(
   atrValue: number,
   multiplier: number = 2.0
 ): number {
-  const stopDistance = atrValue * multiplier;
+  const atrStopDistance = atrValue * multiplier;
+  const minStopDistance = entryPrice * MIN_STOP_PERCENT;
+
+  // Use the larger of ATR-based or minimum stop distance
+  const stopDistance = Math.max(atrStopDistance, minStopDistance);
 
   if (positionSize > 0) {
     return entryPrice - stopDistance; // Long: stop below entry
@@ -265,13 +282,14 @@ export function applyRiskChecks(
   const atrTpMult = config.atrTakeProfitMultiplier ?? 3.0;
 
   // Check trailing stop first (most responsive)
+  // Use config's stop multiplier for consistency (not hardcoded)
   if (ctx.positionSize !== 0 && useAtrStops) {
     updateTrailingStop(
       config.name,
       ctx.currentPrice,
       ctx.positionSize,
       atrValue,
-      1.5
+      atrStopMult // Use config multiplier instead of hardcoded 1.5
     );
 
     if (checkTrailingStop(config.name, ctx.currentPrice, ctx.positionSize)) {
