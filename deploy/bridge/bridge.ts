@@ -37,7 +37,7 @@ const AGENTS_ROOT = process.env.AGENTS_ROOT || "/root/perpsclaw-agents";
 const REASONING_DIR = process.env.REASONING_DIR || "/tmp/perpsclaw";
 const REASONING_FILE = join(REASONING_DIR, "reasoning.jsonl");
 const STATE_FILE = join(AGENTS_ROOT, "bridge-state.json");
-const MAX_REASONING_LINES = 300; // trim threshold (100 per agent)
+const MAX_REASONING_LINES = 600; // trim threshold (200 per agent)
 
 // -- Types --------------------------------------------------------------------
 
