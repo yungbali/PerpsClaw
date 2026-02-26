@@ -1,5 +1,3 @@
-"use client";
-
 import { notFound } from "next/navigation";
 import { AGENTS } from "@/config/agents";
 import { AgentDetailView } from "@/components/arena/AgentDetailView";

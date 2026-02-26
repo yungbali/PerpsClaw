@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { AgentInfo } from "@/config/agents";
@@ -32,7 +32,8 @@ type TabId = (typeof tabs)[number]["id"];
 export function AgentDetailView({ agent }: { agent: AgentInfo }) {
   const [activeTab, setActiveTab] = useState<TabId>("reasoning");
   const stats = useAgentStore((s) => s.agents[agent.id]) as AgentStats;
-  const trades = useTradeLogStore((s) => s.entries.filter((e) => e.agentId === agent.id));
+  const allTrades = useTradeLogStore((s) => s.entries);
+  const trades = useMemo(() => allTrades.filter((e) => e.agentId === agent.id), [allTrades, agent.id]);
   const price = usePriceStore((s) => s.price);
   const pos = stats?.position;
   const market = AGENT_MARKETS[agent.id];
