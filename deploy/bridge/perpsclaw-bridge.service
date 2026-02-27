@@ -1,0 +1,15 @@
+[Unit]
+Description=PerpsClaw OpenClaw-to-Dashboard Bridge
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/npx tsx /root/perpsclaw-agents/shared-skill/scripts/bridge.ts
+WorkingDirectory=/root/perpsclaw-agents
+Environment=AGENTS_ROOT=/root/perpsclaw-agents
+Environment=REASONING_DIR=/tmp/perpsclaw
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

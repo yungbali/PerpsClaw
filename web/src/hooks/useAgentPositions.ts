@@ -5,8 +5,6 @@ import { AGENTS } from "@/config/agents";
 import { useAgentStore, AgentPosition } from "@/stores/useAgentStore";
 import { useTradeLogStore } from "@/stores/useTradeLogStore";
 import { usePriceStore } from "@/stores/usePriceStore";
-import { getReadOnlyDriftClient } from "@/lib/drift/client";
-import { fetchAgentPosition } from "@/lib/drift/positions";
 
 const POLL_INTERVAL = 5000;
 
@@ -15,10 +13,17 @@ export function useAgentPositions() {
   const prevPositions = useRef<Record<string, AgentPosition | null>>({});
 
   useEffect(() => {
+    // Skip if no agents have wallets configured
+    const hasWallets = AGENTS.some((a) => !!a.wallet);
+    if (!hasWallets) return;
+
     let mounted = true;
 
     async function poll() {
       try {
+        // Dynamic import to avoid crashing during module evaluation
+        const { getReadOnlyDriftClient } = await import("@/lib/drift/client");
+        const { fetchAgentPosition } = await import("@/lib/drift/positions");
         const driftClient = await getReadOnlyDriftClient();
 
         for (const agent of AGENTS) {

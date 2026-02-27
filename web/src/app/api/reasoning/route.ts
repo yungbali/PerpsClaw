@@ -17,9 +17,22 @@ interface ReasoningEntry {
   confidence: number;
   reason: string;
   riskChecks: string[];
+  fullReasoning?: string;
+  rsi?: number;
+  sma10?: number;
+  sma30?: number;
+  bbUpper?: number;
+  bbMiddle?: number;
+  bbLower?: number;
+  trend?: string;
+  volatility?: string;
+  collateral?: number;
+  model?: string;
 }
 
 const REASONING_FILE = "reasoning.jsonl";
+
+export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   try {

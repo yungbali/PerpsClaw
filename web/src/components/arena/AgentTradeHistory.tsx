@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useTradeLogStore } from "@/stores/useTradeLogStore";
 
@@ -9,7 +10,8 @@ interface Props {
 }
 
 export function AgentTradeHistory({ agentId, agentColor }: Props) {
-  const entries = useTradeLogStore((s) => s.entries.filter((e) => e.agentId === agentId));
+  const allEntries = useTradeLogStore((s) => s.entries);
+  const entries = useMemo(() => allEntries.filter((e) => e.agentId === agentId), [allEntries, agentId]);
 
   if (entries.length === 0) {
     return (
