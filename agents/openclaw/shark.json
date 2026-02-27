@@ -1,12 +1,13 @@
 {
   "$schema": "https://openclaw.ai/schemas/openclaw.json",
-  "_comment": "PerpsClaw Shark agent config. Copy to ~/.openclaw/openclaw.json and fill in API keys.",
+  "_comment": "PerpsClaw Shark agent — momentum trader. Deploy to /root/perpsclaw-agents/openclaw-shark/",
   "agents": {
     "defaults": {
       "model": {
-        "primary": "anthropic/claude-sonnet-4-20250514"
+        "primary": "openrouter/google/gemini-2.5-flash",
+        "fallbacks": ["openrouter/google/gemini-2.5-flash-lite"]
       },
-      "workspace": "/path/to/PerpsClaw",
+      "workspace": "/root/PerpsClaw",
       "compaction": {
         "mode": "safeguard"
       },
@@ -28,10 +29,15 @@
   "gateway": {
     "port": 18789,
     "mode": "local",
-    "bind": "loopback"
+    "bind": "0.0.0.0"
   },
   "skills": {
     "install": { "nodeManager": "npm" },
     "entries": {}
+  },
+  "env": {
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+    "AGENT_PRIVATE_KEY": "${SHARK_PRIVATE_KEY}",
+    "PERPS_ENV": "/root/PerpsClaw/.env"
   }
 }

@@ -1,12 +1,13 @@
 {
   "$schema": "https://openclaw.ai/schemas/openclaw.json",
-  "_comment": "PerpsClaw Grid agent config. Copy to ~/.openclaw/openclaw.json and fill in API keys.",
+  "_comment": "PerpsClaw Grid agent — systematic grid trader. Deploy to /root/perpsclaw-agents/openclaw-grid/",
   "agents": {
     "defaults": {
       "model": {
-        "primary": "anthropic/claude-sonnet-4-20250514"
+        "primary": "openrouter/google/gemini-2.5-flash",
+        "fallbacks": ["openrouter/google/gemini-2.5-flash-lite"]
       },
-      "workspace": "/path/to/PerpsClaw",
+      "workspace": "/root/PerpsClaw",
       "compaction": {
         "mode": "safeguard"
       },
@@ -28,10 +29,15 @@
   "gateway": {
     "port": 18791,
     "mode": "local",
-    "bind": "loopback"
+    "bind": "0.0.0.0"
   },
   "skills": {
     "install": { "nodeManager": "npm" },
     "entries": {}
+  },
+  "env": {
+    "OPENROUTER_API_KEY": "${OPENROUTER_API_KEY}",
+    "AGENT_PRIVATE_KEY": "${GRID_PRIVATE_KEY}",
+    "PERPS_ENV": "/root/PerpsClaw/.env"
   }
 }

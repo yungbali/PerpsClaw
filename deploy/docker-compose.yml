@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   web:
     build:
@@ -27,50 +25,10 @@ services:
         limits:
           memory: 256M
 
-  shark:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.agent
-      args:
-        AGENT_NAME: shark
-    env_file: ../.env
-    environment:
-      - AGENT_NAME=shark
-    restart: unless-stopped
-    command: ["npx", "tsx", "agents/shark/index.ts"]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-
-  wolf:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.agent
-      args:
-        AGENT_NAME: wolf
-    env_file: ../.env
-    environment:
-      - AGENT_NAME=wolf
-    restart: unless-stopped
-    command: ["npx", "tsx", "agents/wolf/index.ts"]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
-
-  grid:
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.agent
-      args:
-        AGENT_NAME: grid
-    env_file: ../.env
-    environment:
-      - AGENT_NAME=grid
-    restart: unless-stopped
-    command: ["npx", "tsx", "agents/grid/index.ts"]
-    deploy:
-      resources:
-        limits:
-          memory: 256M
+  # Legacy hardcoded agents removed.
+  # Trading is now handled by OpenClaw agents running as native processes:
+  #   - Shark: openclaw on port 18800 (gemini-2.5-flash, SOL-PERP momentum)
+  #   - Wolf:  openclaw on port 18801 (gemini-2.5-flash, ETH-PERP mean reversion)
+  #   - Grid:  openclaw on port 18802 (gemini-2.5-flash, BTC-PERP grid trading)
+  # Agent configs: /root/perpsclaw-agents/openclaw-{shark,wolf,grid}/
+  # Cron jobs fire every 120s. Managed via OpenClaw CLI, not Docker.
